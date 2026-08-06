@@ -41,6 +41,7 @@ export interface Car {
   selfDrive: boolean;
   reviews: CarReview[];
   popular?: boolean;
+  locations?: string[];
 }
 
 export const CARS: Car[] = [

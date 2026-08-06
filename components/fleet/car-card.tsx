@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Users, Fuel, Gauge, Star, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Users, Fuel, Gauge, Star, ArrowRight, CheckCircle2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Car } from '@/lib/data/cars';
@@ -13,7 +13,13 @@ const AVAILABILITY_STYLES: Record<string, string> = {
   'On Request': 'bg-blue-500/10 text-blue-600 border-blue-500/20',
 };
 
+type CarWithLocations = {
+  locations?: string[];
+};
+
 export function CarCard({ car, index = 0 }: { car: Car; index?: number }) {
+  const displayLocations = ((car as CarWithLocations).locations || ['Delhi', 'Gurugram']).slice(0, 2);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -55,7 +61,11 @@ export function CarCard({ car, index = 0 }: { car: Car; index?: number }) {
       </Link>
 
       <div className="p-5">
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-1">{car.tagline}</p>
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-1">{car.tagline}</p>
+        <div className="flex items-center gap-1.5 mb-4 text-[11px] text-muted-foreground">
+          <MapPin className="h-3.5 w-3.5 text-gold" />
+          <span>{displayLocations.join(', ')}</span>
+        </div>
 
         <div className="grid grid-cols-3 gap-2 mb-4 text-center">
           <Spec icon={Users} label={`${car.specs.passengers} Seater`} />
