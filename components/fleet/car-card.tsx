@@ -83,7 +83,7 @@ export function CarCard({ car, index = 0 }: { car: Car; index?: number }) {
               <span className="text-xs text-muted-foreground">/day</span>
             </div>
           </div>
-          <Link href={`/fleet/${car.slug}`}>
+          <Link href={`/booking/${car.slug}`}>
             <Button size="sm" className="btn-gold rounded-full group/btn">
               Book Now
               <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover/btn:translate-x-0.5" />
