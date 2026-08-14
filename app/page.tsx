@@ -34,37 +34,44 @@ export default function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative bg-white overflow-hidden">
-        <div className="container-lux px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-12 md:pb-20">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <section className="relative bg-[hsl(222,47%,8%)] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(222,47%,8%)] via-[hsl(222,47%,12%)] to-[hsl(222,47%,8%)] opacity-90" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(43_74%_50%/_0.08),transparent_50%)]" />
+        <div className="container-lux relative px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-32 md:pb-40">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center">
             {/* LEFT — Content */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="max-w-xl"
+              className="max-w-xl relative z-10"
             >
-              <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold mb-4">
+              <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold mb-5">
                 Premium Travel. Professional Service.
               </div>
-              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.1] mb-5">
-                Premium Mobility for Every Journey
+              <h1 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] font-semibold tracking-tight leading-[1.1] mb-5 text-white">
+                India&apos;s Most Trusted <span className="text-gradient-gold">Mobility Partner</span>
               </h1>
-              <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-8">
-                From economy to luxury, chauffeur-driven and self-drive — book your perfect ride in minutes with transparent pricing and professional service.
+              <p className="text-white/70 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
+                Experience comfort, safety, and reliability with Rentora Mobility. Your journey, our responsibility.
               </p>
 
-              <div className="flex flex-wrap gap-6 mb-8">
+              <div className="flex flex-wrap gap-6 md:gap-8 mb-10">
                 {VALUE_POINTS.map((point) => (
-                  <div key={point.text} className="flex items-center gap-2 text-sm font-medium">
-                    <point.icon className="h-4 w-4 text-gold" />
-                    {point.text}
+                  <div key={point.text} className="flex items-center gap-3 text-sm font-medium text-white/90">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                      <point.icon className="h-4 w-4 text-gold" />
+                    </div>
+                    <div className="leading-tight">
+                      <div className="font-semibold text-white">{point.text.split(' ').slice(0, -1).join(' ')}</div>
+                      <div className="text-white/60 text-xs">{point.text.split(' ').slice(-1)[0]}</div>
+                    </div>
                   </div>
                 ))}
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <a href={telLink()} className="flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity">
+                <a href={telLink()} className="flex items-center gap-2 rounded-full bg-white text-[hsl(222,47%,8%)] px-5 py-2.5 text-sm font-semibold hover:bg-white/90 transition-colors">
                   <Phone className="h-4 w-4" /> {CONTACT.phoneDisplay}
                 </a>
                 <a
@@ -83,22 +90,30 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.15 }}
-              className="relative"
+              className="relative hidden lg:block"
             >
-              <div className="relative aspect-[4/3] lg:aspect-[5/4] rounded-2xl overflow-hidden">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-gold/20 to-transparent rounded-full blur-3xl opacity-30" />
                 <img
                   src={HERO_IMAGE}
                   alt="Premium Rentora Mobility fleet car"
-                  className="h-full w-full object-cover"
+                  className="relative h-full w-full object-cover object-center rounded-2xl max-h-[520px] drop-shadow-2xl"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
               </div>
             </motion.div>
           </div>
+        </div>
 
-          {/* Booking Widget */}
-          <div className="mt-10 md:mt-14">
-            <BookingWidget variant="compact" />
+        {/* Booking Widget — white card at bottom */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <div className="container-lux px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <BookingWidget variant="hero" />
+            </motion.div>
           </div>
         </div>
       </section>

@@ -47,6 +47,24 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
     { icon: Clock, label: 'Return Time', value: dropTime, set: setDropTime, options: TIMES, placeholder: 'Select time' },
   ];
 
+  if (variant === 'hero') {
+    return (
+      <form onSubmit={handleSearch} className="bg-white rounded-2xl md:rounded-3xl shadow-luxury p-4 md:p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {fields.slice(0, 4).map((f, i) => (
+            <FieldInput key={i} {...f} hero />
+          ))}
+        </div>
+        <div className="mt-4 flex justify-end">
+          <Button type="submit" className="btn-gold rounded-full px-8 h-12 text-base group">
+            <Search className="h-5 w-5 mr-2" /> Search Cars
+            <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </div>
+      </form>
+    );
+  }
+
   if (variant === 'compact') {
     return (
       <form onSubmit={handleSearch} className="glass rounded-2xl p-4 shadow-luxury">
@@ -93,6 +111,7 @@ function FieldInput({
   type = 'select',
   min,
   compact,
+  hero,
 }: {
   icon: any;
   label: string;
@@ -103,11 +122,12 @@ function FieldInput({
   type?: 'select' | 'date';
   min?: string;
   compact?: boolean;
+  hero?: boolean;
 }) {
   return (
-    <label className="block">
-      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
-        <Icon className="h-3.5 w-3.5 text-gold" /> {label}
+    <label className={`block ${hero ? '' : ''}`}>
+      <span className={`text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1.5 ${hero ? 'text-foreground/70 font-semibold normal-case tracking-normal' : ''}`}>
+        <Icon className={`h-3.5 w-3.5 text-gold ${hero ? 'h-4 w-4' : ''}`} /> {label}
       </span>
       {type === 'date' ? (
         <input
@@ -115,19 +135,24 @@ function FieldInput({
           value={value}
           min={min}
           onChange={(e) => set(e.target.value)}
-          className="w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors"
+          className={`w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors ${hero ? 'border-0 bg-muted/50 py-3' : ''}`}
         />
       ) : (
-        <select
-          value={value}
-          onChange={(e) => set(e.target.value)}
-          className="w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors"
-        >
-          <option value="">{placeholder}</option>
-          {options?.map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={value}
+            onChange={(e) => set(e.target.value)}
+            className={`w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors appearance-none ${hero ? 'border-0 bg-muted/50 py-3 pr-10' : ''}`}
+          >
+            <option value="">{placeholder}</option>
+            {options?.map((opt) => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+          <div className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground ${hero ? 'top-[calc(50%-2px)]' : 'top-[calc(50%-8px)]'}`}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+        </div>
       )}
     </label>
   );
