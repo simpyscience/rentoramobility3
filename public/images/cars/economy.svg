@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Economy car illustration">
+  <rect width="1200" height="800" fill="#0f172a"/>
+  <rect x="80" y="180" width="1040" height="420" rx="36" fill="#111827"/>
+  <path d="M250 510h700c44 0 80-36 80-80v-42c0-23-19-42-42-42H820l-80-90H480l-65 90H230c-31 0-56 25-56 56v66c0 9 7 16 16 16z" fill="#f59e0b"/>
+  <circle cx="360" cy="560" r="92" fill="#e5e7eb"/>
+  <circle cx="360" cy="560" r="48" fill="#111827"/>
+  <circle cx="860" cy="560" r="92" fill="#e5e7eb"/>
+  <circle cx="860" cy="560" r="48" fill="#111827"/>
+  <rect x="240" y="270" width="240" height="92" rx="16" fill="#fbbf24" opacity="0.95"/>
+  <rect x="520" y="250" width="220" height="80" rx="16" fill="#fde68a" opacity="0.85"/>
+  <text x="600" y="372" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" fill="#fff">Economy Fleet</text>
+</svg>

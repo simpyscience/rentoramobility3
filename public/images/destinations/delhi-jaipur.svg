@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Delhi to Jaipur destination artwork">
+  <rect width="1200" height="800" fill="#111827"/>
+  <rect x="80" y="140" width="1040" height="520" rx="40" fill="#1f2937"/>
+  <path d="M170 590c120-120 210-188 260-220 70-44 124-66 180-76 130-22 240 24 320 96 44 40 100 106 120 180H170z" fill="#f59e0b" opacity="0.95"/>
+  <circle cx="880" cy="260" r="90" fill="#fbbf24" opacity="0.85"/>
+  <rect x="240" y="320" width="220" height="130" rx="20" fill="#fef3c7" opacity="0.9"/>
+  <rect x="520" y="320" width="180" height="120" rx="20" fill="#fde68a" opacity="0.85"/>
+  <text x="600" y="430" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" fill="#fff">Delhi to Jaipur</text>
+</svg>

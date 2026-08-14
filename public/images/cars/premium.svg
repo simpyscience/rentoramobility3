@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Premium car illustration">
+  <rect width="1200" height="800" fill="#111827"/>
+  <rect x="180" y="220" width="840" height="320" rx="44" fill="#0f172a"/>
+  <path d="M320 490h560c46 0 84-38 84-84v-28c0-24-20-44-44-44h-36l-74-96H476l-86 96H300c-24 0-44 19-44 43v25c0 6 5 11 11 11z" fill="#f59e0b"/>
+  <circle cx="420" cy="560" r="90" fill="#e5e7eb"/>
+  <circle cx="420" cy="560" r="46" fill="#111827"/>
+  <circle cx="860" cy="560" r="90" fill="#e5e7eb"/>
+  <circle cx="860" cy="560" r="46" fill="#111827"/>
+  <rect x="300" y="276" width="260" height="86" rx="18" fill="#fbbf24"/>
+  <rect x="590" y="264" width="180" height="76" rx="16" fill="#fde68a" opacity="0.9"/>
+  <text x="600" y="378" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" fill="#fff">Premium Mobility</text>
+</svg>

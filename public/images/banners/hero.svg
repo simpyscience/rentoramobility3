@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Rentora premium car travel banner">
+  <rect width="1600" height="1000" fill="#020617"/>
+  <rect x="0" y="0" width="1600" height="1000" fill="url(#bg)"/>
+  <path d="M0 760c180-130 360-180 560-170 160 8 280 88 440 120 140 28 260 14 400-10v240H0z" fill="#0f172a" opacity="0.95"/>
+  <path d="M280 680h820c72 0 130-58 130-130v-16c0-42-34-76-76-76h-34l-72-90H470l-92 90H320c-24 0-40 16-40 40v20c0 8 6 16 16 16z" fill="#d97706"/>
+  <circle cx="450" cy="780" r="96" fill="#f8fafc"/>
+  <circle cx="450" cy="780" r="46" fill="#020617"/>
+  <circle cx="1060" cy="780" r="96" fill="#f8fafc"/>
+  <circle cx="1060" cy="780" r="46" fill="#020617"/>
+  <rect x="360" y="320" width="320" height="120" rx="24" fill="#fbbf24" opacity="0.95"/>
+  <rect x="760" y="320" width="250" height="110" rx="24" fill="#fde68a" opacity="0.95"/>
+  <text x="800" y="456" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" fill="#ffffff">Premium Mobility</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="0.6" stop-color="#4338ca"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Placeholder car image">
+  <rect width="800" height="500" rx="32" fill="#111827"/>
+  <rect x="40" y="120" width="720" height="280" rx="40" fill="#1f2937"/>
+  <path d="M180 290h440c36 0 68-18 86-48l42-72c10-16 2-36-14-46l-34-16c-14-6-30-3-42 8l-40 40H220l-42-42c-8-8-20-12-32-10l-56 10c-16 2-28 16-28 32v74c0 14 10 26 24 30l32 10c10 2 20-6 24-16l18-38z" fill="#fbbf24"/>
+  <circle cx="260" cy="360" r="58" fill="#f8fafc"/>
+  <circle cx="550" cy="360" r="58" fill="#f8fafc"/>
+  <circle cx="260" cy="360" r="24" fill="#020617"/>
+  <circle cx="550" cy="360" r="24" fill="#020617"/>
+  <rect x="220" y="70" width="220" height="48" rx="20" fill="#f59e0b" opacity="0.95"/>
+  <text x="330" y="102" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#fff">Premium Fleet</text>
+</svg>
