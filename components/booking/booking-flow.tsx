@@ -3,11 +3,12 @@
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, CalendarDays, CheckCircle2, Clock3, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, CalendarDays, CheckCircle2, Clock3, MapPin, Phone, MessageCircle, ShieldCheck, Sparkles, Link as LinkIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { Car } from '@/lib/data/cars';
 import { CITIES } from '@/lib/data/site';
+import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
 
 const TIMES = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
 
@@ -266,6 +267,48 @@ export function BookingConfirmation({ car }: { car: Car }) {
                   <li>• A pricing confirmation will be shared on your selected schedule.</li>
                   <li>• You can reach us directly for any urgent changes.</li>
                 </ul>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <a
+                  href={whatsappLink(
+                    `Hello Rentora Mobility, I just submitted a booking request.\nVehicle: ${car.name}\nPickup: ${pickupLocation} on ${formatDisplayDate(pickupDate)} at ${formatDisplayTime(pickupTime)}\nReturn: ${dropLocation} on ${formatDisplayDate(returnDate)} at ${formatDisplayTime(returnTime)}\nEstimated total: ₹${estimate.total.toLocaleString('en-IN')}`
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Confirm this booking via WhatsApp"
+                >
+                  <Button className="w-full rounded-full bg-[#25D366] hover:bg-[#25D366]/90 text-white h-11">
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Confirm via WhatsApp
+                  </Button>
+                </a>
+
+                <a href={telLink()} aria-label="Call Rentora Mobility to confirm">
+                  <Button variant="outline" className="w-full rounded-full h-11">
+                    <Phone className="h-5 w-5 mr-2" />
+                    Call Rentora
+                  </Button>
+                </a>
+
+                <a
+                  href={whatsappLink(`Hello Rentora Mobility, I have a question about my booking for ${car.name}.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Chat with Rentora on WhatsApp"
+                >
+                  <Button variant="outline" className="w-full rounded-full h-11">
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Chat on WhatsApp
+                  </Button>
+                </a>
+
+                <a href="/fleet" aria-label="Browse more cars in our fleet">
+                  <Button variant="outline" className="w-full rounded-full h-11">
+                    <LinkIcon className="h-5 w-5 mr-2" />
+                    Browse Fleet
+                  </Button>
+                </a>
               </div>
             </div>
           </div>

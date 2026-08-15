@@ -246,19 +246,24 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <a href={whatsappLink(`Hello, I have booked ${car.name}. Booking ref: ${bookingRef}. Pickup: ${pickupCity} on ${pickupDate} at ${pickupTime}.`)} target="_blank" rel="noopener noreferrer" className="flex-1">
+              <a href={whatsappLink(`Hello, I have booked ${car.name}. Booking ref: ${bookingRef}. Pickup: ${pickupCity} on ${pickupDate} at ${pickupTime}.`)} target="_blank" rel="noopener noreferrer" aria-label="Confirm booking via WhatsApp" className="flex-1">
                 <Button className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white rounded-full">
                   <MessageCircle className="h-4 w-4 mr-2" /> Confirm via WhatsApp
                 </Button>
               </a>
-              <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className="flex-1">
+              <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} aria-label="Call Rentora Mobility to confirm" className="flex-1">
                 <Button variant="outline" className="w-full rounded-full">
-                  <Phone className="h-4 w-4 mr-2" /> Call to Confirm
+                  <Phone className="h-4 w-4 mr-2" /> Call Rentora
                 </Button>
               </a>
             </div>
-            <div className="mt-6">
-              <a href="/fleet"><Button variant="ghost" className="text-muted-foreground">Browse more cars</Button></a>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <a href="/fleet" aria-label="Browse more cars in our fleet" className="flex-1">
+                <Button variant="ghost" className="w-full rounded-full">Browse Fleet</Button>
+              </a>
+              <a href="/contact" aria-label="Contact Rentora Mobility" className="flex-1">
+                <Button variant="outline" className="w-full rounded-full">Contact Us</Button>
+              </a>
             </div>
           </motion.div>
         </div>
@@ -539,14 +544,14 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
               <div className="luxury-card p-6">
                 <h3 className="font-semibold mb-4">Need Help?</h3>
                 <div className="space-y-3">
-                  <a href={whatsappLink(`Hello, I need help booking the ${car.name}.`)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:border-gold/50 transition-colors">
+                  <a href={whatsappLink(`Hello, I need help with a booking inquiry. Car: ${car.name}.`)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Rentora Mobility for help" className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:border-gold/50 transition-colors focus-within:ring-2 focus-within:ring-gold">
                     <MessageCircle className="h-5 w-5 text-[#25D366]" />
                     <div>
                       <div className="text-xs text-muted-foreground">WhatsApp</div>
                       <div className="text-sm font-semibold">{CONTACT.whatsappDisplay}</div>
                     </div>
                   </a>
-                  <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:border-gold/50 transition-colors">
+                  <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} aria-label="Call Rentora Mobility" className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:border-gold/50 transition-colors focus-within:ring-2 focus-within:ring-gold">
                     <Phone className="h-5 w-5 text-gold" />
                     <div>
                       <div className="text-xs text-muted-foreground">Call us</div>

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, Tag, CheckCircle2, Phone, MessageCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -89,14 +89,19 @@ Total: ₹${total.toFixed(0)}`;
           </div>
         </div>
 
-        <a href={whatsappLink(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="block">
+        <a href={whatsappLink(whatsappMessage)} target="_blank" rel="noopener noreferrer" aria-label="Confirm booking via WhatsApp">
           <Button className="w-full rounded-xl bg-[#25D366] hover:bg-[#25D366]/90 text-white mb-2">
             <MessageCircle className="h-4 w-4 mr-2" /> Confirm via WhatsApp
           </Button>
         </a>
-        <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`}>
+        <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} aria-label="Call to confirm booking">
           <Button variant="outline" className="w-full rounded-xl">
             <Phone className="h-4 w-4 mr-2" /> Call to Confirm
+          </Button>
+        </a>
+        <a href="/fleet" aria-label="Browse more cars">
+          <Button variant="outline" className="w-full rounded-xl mt-2">
+            Browse Fleet
           </Button>
         </a>
       </motion.div>
