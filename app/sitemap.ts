@@ -1,12 +1,13 @@
 import { MetadataRoute } from 'next';
 import { CARS } from '@/lib/data/cars';
 import { SERVICES, BLOG_POSTS } from '@/lib/data/site';
+import { DESTINATIONS } from '@/lib/data/destinations';
 
 const SITE_URL = 'https://rentoramobility.in';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
-    '', '/fleet', '/services', '/about', '/blog', '/contact',
+    '', '/fleet', '/destinations', '/services', '/about', '/blog', '/contact',
     '/privacy-policy', '/terms', '/refund-policy', '/cancellation-policy',
   ].map((path) => ({
     url: `${SITE_URL}${path}`,
@@ -20,6 +21,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
+  }));
+
+  const destinationRoutes = DESTINATIONS.map((destination) => ({
+    url: `${SITE_URL}/destinations/${destination.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
   }));
 
   const serviceRoutes = SERVICES.map((service) => ({
@@ -36,5 +44,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...carRoutes, ...serviceRoutes, ...blogRoutes];
+  return [...staticRoutes, ...carRoutes, ...destinationRoutes, ...serviceRoutes, ...blogRoutes];
 }

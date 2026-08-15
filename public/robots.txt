@@ -1,6 +1,0 @@
-# Rentora Mobility
-User-agent: *
-Allow: /
-Disallow: /api/
-
-Sitemap: https://rentoramobility.in/sitemap.xml

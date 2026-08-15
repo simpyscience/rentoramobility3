@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Clock3, MapPinned, Compass, Hotel, UtensilsCrossed, CarFront, Fuel, BadgeCheck, Trees, ParkingCircle, SunMedium } from 'lucide-react';
+import { ArrowRight, Clock3, MapPinned, Compass, Hotel, UtensilsCrossed, CarFront, Fuel, BadgeCheck, Trees, ParkingCircle, SunMedium } from 'lucide-react';
 import { getDestinationBySlug, getDestinationRecommendedCars } from '@/lib/data/destinations';
 import { CarCard } from '@/components/fleet/car-card';
 import { Button } from '@/components/ui/button';
@@ -31,19 +31,37 @@ export default function DestinationDetailPage({ params }: PageProps) {
   const destination = getDestinationBySlug(params.slug);
   if (!destination) notFound();
 
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://rentoramobility.in/' },
+      { '@type': 'ListItem', position: 2, name: 'Destinations', item: 'https://rentoramobility.in/destinations' },
+      { '@type': 'ListItem', position: 3, name: destination.name, item: `https://rentoramobility.in/destinations/${destination.slug}` },
+    ],
+  };
+
   const recommendedCars = getDestinationRecommendedCars(destination);
   const gallery = destination.gallery.length > 1 ? destination.gallery : [destination.heroImage];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <div className="min-h-screen bg-background">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-gold/10 via-background to-background" />
         <div className="relative container-lux px-4 sm:px-6 lg:px-8 pt-28 pb-12">
           <div>
-            <Link href="/destinations" className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-gold hover:text-gold/80 transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Back to destinations
-            </Link>
+            <nav aria-label="Breadcrumb" className="mb-6">
+              <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+                <li><Link href="/" className="hover:text-gold transition-colors">Home</Link></li>
+                <li aria-hidden="true" className="text-gold/60">/</li>
+                <li><Link href="/destinations" className="hover:text-gold transition-colors">Destinations</Link></li>
+                <li aria-hidden="true" className="text-gold/60">/</li>
+                <li aria-current="page" className="font-medium text-foreground">{destination.name}</li>
+              </ol>
+            </nav>
             <div className="flex items-center gap-2 mb-3">
               <Badge className="bg-gold/90 text-[hsl(var(--gold-foreground))] border-0 text-[10px] font-semibold uppercase tracking-wider">
                 {destination.state}
@@ -249,5 +267,6 @@ export default function DestinationDetailPage({ params }: PageProps) {
         </div>
       </div>
     </div>
+  </>
   );
 }

@@ -58,21 +58,12 @@ export const metadata: Metadata = {
     title: 'Rentora Mobility — Premium Mobility. Trusted Journeys.',
     description:
       'Premium car rentals across India. Luxury cars, SUVs, corporate rentals, airport transfers, wedding cars & self drive.',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Rentora Mobility — Premium Car Rental & Mobility Platform',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Rentora Mobility — Premium Car Rental & Mobility Platform in India',
     description:
       'Premium car rentals across India. Luxury cars, SUVs, corporate rentals, airport transfers, wedding cars & self drive.',
-    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -98,23 +89,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'Rentora Mobility',
-              url: SITE_URL,
-              email: 'rentoramobility@protonmail.com',
-              telephone: '+91 9958021329',
-              additionalTelephone: '+91 7291973553',
-              areaServed: 'India',
-              slogan: 'Premium Mobility. Trusted Journeys.',
-              sameAs: [],
-            }),
-          }}
-        />
       </head>
       <body className={`${inter.variable} ${playfair.variable} font-sans`}>
         <StructuredData />

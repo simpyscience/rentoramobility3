@@ -58,15 +58,15 @@ export function CarDetailPage({ car }: { car: Car }) {
   return (
     <div className="pt-24 pb-20">
       {/* Breadcrumb */}
-      <div className="container-lux px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-gold transition-colors">Home</Link>
-          <ChevronRight className="h-3 w-3" />
-          <Link href="/fleet" className="hover:text-gold transition-colors">Fleet</Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground">{car.name}</span>
-        </div>
-      </div>
+      <nav aria-label="Breadcrumb" className="container-lux px-4 sm:px-6 lg:px-8 py-4">
+        <ol className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <li><Link href="/" className="hover:text-gold transition-colors">Home</Link></li>
+          <li aria-hidden="true"><ChevronRight className="h-3 w-3" /></li>
+          <li><Link href="/fleet" className="hover:text-gold transition-colors">Fleet</Link></li>
+          <li aria-hidden="true"><ChevronRight className="h-3 w-3" /></li>
+          <li aria-current="page" className="text-foreground">{car.name}</li>
+        </ol>
+      </nav>
 
       <div className="container-lux px-4 sm:px-6 lg:px-8">
         {/* Header */}

@@ -3,6 +3,7 @@ import { ProtectedRoute } from '@/components/auth/protected-route';
 export const metadata = {
   title: 'Dashboard',
   description: 'Your Rentora dashboard placeholder.',
+  robots: { index: false, follow: false },
 };
 
 export default function DashboardPage() {

@@ -30,5 +30,21 @@ export function generateMetadata({ params }: PageProps): Metadata {
 export default function Page({ params }: PageProps) {
   const car = getCarBySlug(params.slug);
   if (!car) notFound();
-  return <CarDetailPage car={car} />;
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://rentoramobility.in/' },
+      { '@type': 'ListItem', position: 2, name: 'Fleet', item: 'https://rentoramobility.in/fleet' },
+      { '@type': 'ListItem', position: 3, name: car.name, item: `https://rentoramobility.in/fleet/${car.slug}` },
+    ],
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <CarDetailPage car={car} />
+    </>
+  );
 }

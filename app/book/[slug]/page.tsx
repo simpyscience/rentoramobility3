@@ -20,6 +20,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
     title: `Book ${car.name} — Rentora Mobility`,
     description: `Book the ${car.name} rental in India. ${car.specs.passengers} seater, ${car.specs.fuel}, ${car.specs.transmission}. Starting from ₹${car.pricePerDay.toLocaleString('en-IN')}/day.`,
     alternates: { canonical: `/book/${car.slug}` },
+    robots: { index: false, follow: true },
   };
 }
 

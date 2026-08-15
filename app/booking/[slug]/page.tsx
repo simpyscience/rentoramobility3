@@ -15,6 +15,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
   return {
     title: `Book ${car.name} | Rentora Mobility`,
     description: `Reserve the ${car.name} with pickup and return details, pricing estimates and premium support.`,
+    robots: { index: false, follow: true },
   };
 }
 

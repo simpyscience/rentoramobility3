@@ -6,6 +6,7 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 export const metadata = {
   title: 'Booking Management — Rentora Admin',
   description: 'Manage customer bookings for Rentora Mobility.',
+  robots: { index: false, follow: false },
 };
 
 async function fetchBookings(): Promise<BookingRecord[]> {

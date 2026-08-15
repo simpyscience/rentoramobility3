@@ -5,7 +5,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/'],
+      disallow: [
+        '/api/',
+        '/admin/',
+        '/book/',
+        '/booking/',
+        '/login',
+        '/signup',
+        '/dashboard',
+        '/forgot-password',
+        '/reset-password',
+      ],
     },
     sitemap: 'https://rentoramobility.in/sitemap.xml',
     host: 'https://rentoramobility.in',

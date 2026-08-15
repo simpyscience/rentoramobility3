@@ -1,20 +1,18 @@
-interface Props {
-  cars?: boolean;
-}
+const SITE_URL = 'https://rentoramobility.in';
 
-export function StructuredData({ cars = false }: Props) {
-  const SITE_URL = 'https://rentoramobility.in';
-
+export function StructuredData() {
   const organization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'Rentora Mobility',
     url: SITE_URL,
+    logo: `${SITE_URL}/brand/rentora-mobility-logo.png`,
     email: 'rentoramobility@protonmail.com',
     telephone: '+91 9958021329',
     additionalTelephone: '+91 7291973553',
     areaServed: 'India',
     slogan: 'Premium Mobility. Trusted Journeys.',
+    sameAs: [],
   };
 
   const website = {
@@ -29,26 +27,10 @@ export function StructuredData({ cars = false }: Props) {
     },
   };
 
-  const serviceSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'AutoRental',
-    name: 'Rentora Mobility',
-    image: `${SITE_URL}/og-image.jpg`,
-    url: SITE_URL,
-    telephone: '+91 9958021329',
-    priceRange: '₹₹₹',
-    address: {
-      '@type': 'PostalAddress',
-      addressCountry: 'IN',
-    },
-    areaServed: 'India',
-  };
-
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(website) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
     </>
   );
 }

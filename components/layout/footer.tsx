@@ -10,6 +10,8 @@ import { Logo } from '@/components/layout/logo';
 const FOOTER_LINKS = {
   Company: [
     { href: '/about', label: 'About Us' },
+    { href: '/fleet', label: 'Fleet' },
+    { href: '/destinations', label: 'Destinations' },
     { href: '/services', label: 'Services' },
     { href: '/blog', label: 'Blog' },
     { href: '/contact', label: 'Contact' },

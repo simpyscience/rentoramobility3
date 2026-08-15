@@ -10,6 +10,7 @@ export const CONTACT = {
   whatsappDisplay: '+91 99580 21329',
   whatsapp2: '917291973553',
   whatsapp2Display: '+91 72919 73553',
+  address: '52, 1st Floor, Union Bank, Wazirabad, Gurugram-122003',
 };
 
 export function whatsappLink(message: string): string {

@@ -133,6 +133,13 @@ export const CHAUFFEUR_IMAGES: string[] = [
   '/images/chauffers/download (6)-images-48.jpg',
   '/images/chauffers/download (6)-images-56.jpg',
   '/images/chauffers/image_15b575c9 (1).png',
+  // New local chauffeur/comfort photographs (added this batch).
+  '/images/chauffers/ChatGPT Image Aug 15, 2026, 01_00_29 PM.png',
+  '/images/chauffers/ChatGPT Image Aug 15, 2026, 01_13_37 PM.png',
+  '/images/chauffers/ChatGPT Image Aug 15, 2026, 01_16_20 PM.png',
+  '/images/chauffers/ChatGPT Image Aug 15, 2026, 01_17_53 PM.png',
+  '/images/chauffers/ChatGPT Image Aug 15, 2026, 12_46_17 PM.png',
+  '/images/chauffers/ChatGPT Image Aug 15, 2026, 12_49_56 PM (1).png',
 ];
 
 /**
@@ -168,8 +175,13 @@ export const CAR_IMAGE_MAP: Record<string, string> = {
  * and cannot be confidently identified without visual inspection.
  */
 export const DESTINATION_IMAGE_MAP: Record<string, string> = {
-  // Example (once identified):
-  // 'delhi-jaipur': '/images/destinations/download (6)-images-4.jpg',
+  // Confidently identified real local destination photographs.
+  // Filenames clearly indicate the city, so they are mapped to the
+  // corresponding destination route. The remaining routes keep their
+  // deterministic photo / SVG fallback in getDestinationAssetPath().
+  'mumbai-pune': '/images/destinations/mumbai-gateway-of-india.jpg',
+  'delhi-jaipur': '/images/destinations/jaipur-rajasthan.jpg',
+  'delhi-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
 };
 
 /* ------------------------------------------------------------------ */
