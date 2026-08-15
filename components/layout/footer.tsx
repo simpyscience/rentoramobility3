@@ -2,10 +2,24 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Phone, Mail, MessageCircle, MapPin, ChevronRight } from 'lucide-react';
+import { Phone, Mail, MessageCircle, MapPin, ChevronRight, Linkedin, Facebook } from 'lucide-react';
 import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
-import { CITIES } from '@/lib/data/site';
+import { CITIES, SOCIAL_LINKS } from '@/lib/data/site';
 import { Logo } from '@/components/layout/logo';
+
+function XSocialIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+const SOCIAL_ICONS: Record<string, React.ReactNode> = {
+  linkedin: <Linkedin className="h-4 w-4" />,
+  x: <XSocialIcon className="h-4 w-4" />,
+  facebook: <Facebook className="h-4 w-4" />,
+};
 
 const FOOTER_LINKS = {
   Company: [
@@ -53,9 +67,28 @@ export function Footer() {
               <a href={whatsappLink('Hello Rentora Mobility')} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
                 <MessageCircle className="h-4 w-4 text-gold" /> WhatsApp {CONTACT.whatsappDisplay} · {CONTACT.whatsapp2Display}
               </a>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4 text-gold" /> Available Across India
+              <div className="flex items-start gap-2 text-muted-foreground">
+                <MapPin className="h-4 w-4 text-gold mt-0.5 shrink-0" />
+                <div>
+                  <div className="font-semibold text-foreground">{CONTACT.company}</div>
+                  <div>{CONTACT.address}</div>
+                </div>
               </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-5">
+              {SOCIAL_LINKS.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-gold hover:text-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                >
+                  {SOCIAL_ICONS[s.name]}
+                </a>
+              ))}
             </div>
           </div>
 

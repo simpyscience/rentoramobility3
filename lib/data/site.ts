@@ -20,6 +20,19 @@ export const CITIES: City[] = [
   { slug: 'agra', name: 'Agra', state: 'Uttar Pradesh', image: getDestinationAssetPath('delhi-agra') },
 ];
 
+export interface SocialLink {
+  name: 'linkedin' | 'x' | 'facebook';
+  label: string;
+  href: string;
+}
+
+/** Officially verified Rentora Mobility social profiles (only these three). */
+export const SOCIAL_LINKS: SocialLink[] = [
+  { name: 'linkedin', label: 'Rentora Mobility on LinkedIn', href: 'https://in.linkedin.com/in/rentora-mobility-a1040b428' },
+  { name: 'x', label: 'Rentora Mobility on X', href: 'https://x.com/rentoramobilit' },
+  { name: 'facebook', label: 'Rentora Mobility on Facebook', href: 'https://www.facebook.com/profile.php?id=61588481046703' },
+];
+
 export const POPULAR_DESTINATIONS = [
   { slug: 'delhi-to-jaipur', from: 'Delhi', to: 'Jaipur', distance: '280 km', image: getDestinationAssetPath('delhi-jaipur'), description: 'The royal Pink City journey' },
   { slug: 'delhi-to-agra', from: 'Delhi', to: 'Agra', distance: '230 km', image: getDestinationAssetPath('delhi-agra'), description: 'Visit the iconic Taj Mahal' },

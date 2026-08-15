@@ -14,6 +14,7 @@ import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
 import { CARS, getPopularCars } from '@/lib/data/cars';
 import { FAQS, WHY_CHOOSE_US, POPULAR_DESTINATIONS } from '@/lib/data/site';
 import { getCarAssetPath } from '@/lib/data/images';
+import { ChauffeursCityGuides } from '@/components/sections/chauffeurs-city-guides';
 
 const HERO_IMAGE = '/images/cars/fleet.jpg';
 
@@ -283,6 +284,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* PROFESSIONAL CHAUFFEURS & CITY GUIDES */}
+      <ChauffeursCityGuides />
 
       {/* CTA */}
       <section className="section-pad">
