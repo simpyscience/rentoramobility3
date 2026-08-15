@@ -51,7 +51,7 @@ export default function HomePage() {
                 Premium Travel. Professional Service.
               </div>
               <h1 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] font-semibold tracking-tight leading-[1.1] mb-5 text-white">
-                India&apos;s Most Trusted <span className="text-gradient-gold">Mobility Partner</span>
+                 India&apos;s Premium <span className="text-gradient-gold">Mobility Partner</span>
               </h1>
               <p className="text-white/70 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
                 Experience comfort, safety, and reliability with Rentora Mobility. Your journey, our responsibility.

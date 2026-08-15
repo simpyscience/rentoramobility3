@@ -55,7 +55,7 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Logo />
             <p className="text-sm text-muted-foreground max-w-sm mb-6 mt-4">
-              India&apos;s premium car rental & mobility platform. From economy to luxury, chauffeur-driven and self-drive — available across 120+ cities nationwide.
+              India&apos;s premium car rental & mobility platform. From economy to luxury, chauffeur-driven and self-drive — available across India.
             </p>
             <div className="flex flex-col gap-2 text-sm">
               <a href={telLink()} className="flex items-center gap-2 hover:text-gold transition-colors">

@@ -9,7 +9,7 @@ import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
 
 export const metadata: Metadata = {
   title: 'Services — Premium Car Rental Services in India | Rentora Mobility',
-  description: 'Airport transfers, corporate rentals, luxury cars, outstation trips, wedding cars and self drive. Premium mobility services across 120+ cities in India.',
+  description: 'Airport transfers, corporate rentals, luxury cars, outstation trips, wedding cars and self drive. Premium mobility services across India.',
   alternates: { canonical: '/services' },
 };
 

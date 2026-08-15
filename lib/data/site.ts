@@ -258,7 +258,7 @@ export const WHY_CHOOSE_US = [
   { icon: 'ShieldCheck', title: 'Trusted & Verified', text: 'Every vehicle is inspected, sanitised and verified. Background-checked chauffeurs for your safety.' },
   { icon: 'Clock', title: '24/7 Availability', text: 'Round-the-clock support and roadside assistance. We are always there when you need us.' },
   { icon: 'IndianRupee', title: 'Transparent Pricing', text: 'No hidden charges. What you see is what you pay. GST included in every quote.' },
-  { icon: 'MapPin', title: 'Pan India Coverage', text: 'Available across 120+ cities in India. From metro hubs to remote destinations.' },
+  { icon: 'MapPin', title: 'Pan India Coverage', text: 'Premium mobility services available across India — from metro hubs to popular travel destinations.' },
   { icon: 'Car', title: 'Premium Fleet', text: 'From economical hatchbacks to luxury limousines — a car for every journey and budget.' },
   { icon: 'Headset', title: 'Voice AI Assistant', text: 'Our AI assistant helps you choose, book and plan — in English and Hindi, 24/7.' },
 ];

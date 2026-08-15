@@ -12,7 +12,19 @@ export function StructuredData() {
     additionalTelephone: '+91 7291973553',
     areaServed: 'India',
     slogan: 'Premium Mobility. Trusted Journeys.',
-    sameAs: [],
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '52, 1st Floor, Union Bank, Wazirabad',
+      addressLocality: 'Gurugram',
+      addressRegion: 'Haryana',
+      postalCode: '122003',
+      addressCountry: 'IN',
+    },
+    sameAs: [
+      'https://in.linkedin.com/in/rentora-mobility-a1040b428',
+      'https://x.com/rentoramobilit',
+      'https://www.facebook.com/profile.php?id=61588481046703',
+    ],
   };
 
   const website = {
