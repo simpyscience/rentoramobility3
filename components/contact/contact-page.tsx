@@ -116,6 +116,16 @@ export function ContactPage() {
       color: 'text-foreground',
       aria: 'Rentora Mobility support is available 24/7',
     },
+    {
+      icon: MapPin,
+      label: 'Registered Office',
+      value: CONTACT.address,
+      secondary: '',
+      href: '',
+      secondaryHref: '',
+      color: 'text-foreground',
+      aria: 'Rentora Mobility registered office address',
+    },
   ];
 
   const inputCls = (err: boolean) =>

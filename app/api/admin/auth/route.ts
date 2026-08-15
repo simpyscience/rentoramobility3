@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-const ADMIN_TOKEN = process.env.ADMIN_API_KEY || process.env.NEXT_PUBLIC_ADMIN_TOKEN || '';
+const ADMIN_TOKEN = process.env.ADMIN_API_KEY || '';
 
 export async function POST(request: Request) {
   try {

@@ -118,8 +118,8 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
     return Object.keys(errs).length === 0;
   };
 
-  const checkAvailability = async () => {
-    if (!car || !pickupDate || !dropDate) return;
+  const checkAvailability = async (): Promise<{ available: boolean; message: string } | null> => {
+    if (!car || !pickupDate || !dropDate) return null;
     setCheckingAvailability(true);
     setAvailability(null);
     try {
@@ -136,13 +136,16 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        setAvailability({ available: data.available, message: data.message });
-      } else {
-        setAvailability({ available: false, message: data.error || 'Unable to check availability.' });
-      }
+      const result =
+        data.success
+          ? { available: data.available, message: data.message }
+          : { available: false, message: data.error || 'Unable to check availability.' };
+      setAvailability(result);
+      return result;
     } catch {
-      setAvailability({ available: false, message: 'Network error. Please try again.' });
+      const result = { available: false, message: 'Network error. Please try again.' };
+      setAvailability(result);
+      return result;
     } finally {
       setCheckingAvailability(false);
     }
@@ -151,9 +154,10 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError('');
+    if (submitting) return;
     if (!validate()) return;
-    await checkAvailability();
-    if (!availability?.available) return;
+    const availabilityResult = await checkAvailability();
+    if (!availabilityResult?.available) return;
 
     setSubmitting(true);
     try {
