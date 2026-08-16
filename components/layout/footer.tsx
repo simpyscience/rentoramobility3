@@ -24,6 +24,7 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
 const FOOTER_LINKS = {
   Company: [
     { href: '/about', label: 'About Us' },
+    { href: '/team', label: 'Our Team' },
     { href: '/fleet', label: 'Fleet' },
     { href: '/destinations', label: 'Destinations' },
     { href: '/services', label: 'Services' },

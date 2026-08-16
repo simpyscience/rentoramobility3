@@ -28,6 +28,7 @@ const NAV_LINKS = [
   },
   { href: '/destinations', label: 'Destinations' },
   { href: '/about', label: 'About' },
+  { href: '/team', label: 'Team' },
   { href: '/contact', label: 'Contact' },
 ];
 

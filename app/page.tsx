@@ -15,6 +15,7 @@ import { CARS, getPopularCars } from '@/lib/data/cars';
 import { FAQS, WHY_CHOOSE_US, POPULAR_DESTINATIONS } from '@/lib/data/site';
 import { getCarAssetPath } from '@/lib/data/images';
 import { ChauffeursCityGuides } from '@/components/sections/chauffeurs-city-guides';
+import { PartnerSection } from '@/components/sections/partner-section';
 
 const HERO_IMAGE = '/images/cars/fleet.jpg';
 
@@ -287,6 +288,9 @@ export default function HomePage() {
 
       {/* PROFESSIONAL CHAUFFEURS & CITY GUIDES */}
       <ChauffeursCityGuides />
+
+      {/* PARTNER */}
+      <PartnerSection />
 
       {/* CTA */}
       <section className="section-pad">
