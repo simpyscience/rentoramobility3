@@ -7,10 +7,9 @@ import { SectionHeading } from '@/components/ui/section-heading';
 import { Button } from '@/components/ui/button';
 import { CITIES } from '@/lib/data/site';
 import { getAllChauffeurImages } from '@/lib/data/images';
-import { cn } from '@/lib/utils';
 
 export function ChauffeursCityGuides() {
-  const images = getAllChauffeurImages().slice(0, 4);
+  const images = getAllChauffeurImages();
 
   return (
     <section className="section-pad bg-card/30">
@@ -56,27 +55,39 @@ export function ChauffeursCityGuides() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
+            className="grid grid-cols-2 gap-4"
           >
-            <div className="grid grid-cols-2 gap-4">
-              {images.map((src, i) => (
-                <div
-                  key={src}
-                  className={cn(
-                    'relative overflow-hidden rounded-2xl border border-border',
-                    i === 0 ? 'row-span-2 aspect-[4/5]' : 'aspect-[4/5]'
-                  )}
-                >
-                  <img
-                    src={src}
-                    alt="Professional chauffeur service"
-                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-              ))}
-            </div>
+            {images.slice(0, 4).map((src) => (
+              <div key={src} className="relative overflow-hidden rounded-2xl border border-border aspect-[4/5]">
+                <img
+                  src={src}
+                  alt="Professional chauffeur service"
+                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            ))}
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1 }}
+          className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+        >
+          {images.slice(4).map((src) => (
+            <div key={src} className="relative overflow-hidden rounded-2xl border border-border aspect-[4/5]">
+              <img
+                src={src}
+                alt="Professional chauffeur service"
+                className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

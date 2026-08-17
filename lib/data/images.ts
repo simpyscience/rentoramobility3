@@ -26,38 +26,18 @@ export type ImageVariant = 'hero' | 'gallery' | 'thumb';
 /* ------------------------------------------------------------------ */
 
 /**
- * All real car images available in /public/images/cars/
- * These have generic filenames and cannot be confidently identified
- * without visual inspection. They are listed here for future mapping.
+ * Real car images available in /public/images/cars/.
+ *
+ * This array is the SAFE DETERMINISTIC FALLBACK pool. It intentionally contains
+ * only generic "fleet"/showroom photographs that do not clearly identify as a
+ * specific unrelated model — so a random car never displays another model's
+ * image. Specific, confidently-identified model photos live in CAR_IMAGE_MAP
+ * below and are used exclusively for their matching car.
  */
 export const LOCAL_CAR_IMAGES: string[] = [
-  '/images/cars/download (6)-images-0.jpg',
-  '/images/cars/download (6)-images-1.jpg',
-  '/images/cars/download (6)-images-2.jpg',
-  '/images/cars/download (6)-images-3.jpg',
-  '/images/cars/download (6)-images-21.jpg',
-  '/images/cars/download (6)-images-22.jpg',
-  '/images/cars/download (6)-images-31.jpg',
-  '/images/cars/download (6)-images-32.jpg',
-  '/images/cars/download (6)-images-33.jpg',
-  '/images/cars/download (6)-images-35 (1).jpg',
-  '/images/cars/download (6)-images-35.jpg',
-  '/images/cars/download (6)-images-38.jpg',
-  '/images/cars/download (6)-images-52.jpg',
-  '/images/cars/download (6)-images-53.jpg',
-  '/images/cars/download (6)-images-60.jpg',
-  '/images/cars/download (6)-images-61.jpg',
-  '/images/cars/download (6)-images-68.jpg',
-  '/images/cars/download (6)-images-72.jpg',
-  '/images/cars/download (6)-images-73.jpg',
-  '/images/cars/download (6)-images-74.jpg',
-  '/images/cars/download (6)-images-75.jpg',
-  '/images/cars/download (6)-images-76.jpg',
-  '/images/cars/download (6)-images-77.jpg',
-  '/images/cars/download (6)-images-78.jpg',
-  '/images/cars/download (6)-images-79.jpg',
-  '/images/cars/download (6)-images-80.jpg',
-  '/images/cars/download (7).jfif',
+  '/images/cars/fleet.jpg',
+  '/images/cars/fleet (2).jpg',
+  '/images/cars/fleet (3).jpg',
 ];
 
 /**
@@ -163,9 +143,18 @@ export const CHAUFFEUR_FEATURE_IMAGES: string[] = [
  * Currently empty — all local car JPGs have generic filenames and
  * cannot be confidently identified without visual inspection.
  */
+/**
+ * Maps car slugs (base model slug) to confident local car images.
+ * Only entries whose image clearly shows the matching model are added.
+ * Keys use the BASE slug (e.g. 'honda-city') so both legacy cars and the
+ * generated city-variant cars resolve to the correct photograph.
+ */
 export const CAR_IMAGE_MAP: Record<string, string> = {
-  // Example (once identified):
-  // 'toyota-innova-crysta': '/images/cars/download (6)-images-0.jpg',
+  'maruti-dzire': '/images/cars/suzuki swift dzire.jpg',
+  'honda-city': '/images/cars/hondai city.jpg',
+  'toyota-innova-crysta': '/images/cars/toyota innova crysta.jpg',
+  'toyota-innova-hycross': '/images/cars/toyota innova hycross.jpg',
+  'toyota-fortuner': '/images/cars/toyota fortuner (2).jpg',
 };
 
 /**

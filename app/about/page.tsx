@@ -17,6 +17,62 @@ const VALUES = [
   { icon: Heart, title: 'Values', text: 'Trust, transparency, safety and exceptional service guide everything we do.' },
 ];
 
+function StoryImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <MotionDiv
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border"
+    >
+      <img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" />
+    </MotionDiv>
+  );
+}
+
+function FeatureBlock({
+  eyebrow,
+  title,
+  body,
+  image,
+  imageAlt,
+  reverse,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+  image: string;
+  imageAlt: string;
+  reverse?: boolean;
+}) {
+  return (
+    <div className="grid items-center gap-10 lg:grid-cols-2">
+      <MotionDiv
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className={reverse ? 'lg:order-2' : ''}
+      >
+        <div className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-gold">{eyebrow}</div>
+        <h2 className="mb-4 font-display text-3xl font-semibold tracking-tight md:text-4xl">{title}</h2>
+        <p className="text-lg leading-relaxed text-muted-foreground">{body}</p>
+      </MotionDiv>
+      <MotionDiv
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className={reverse ? 'lg:order-1' : ''}
+      >
+        <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border">
+          <img src={image} alt={imageAlt} className="h-full w-full object-cover" loading="lazy" />
+        </div>
+      </MotionDiv>
+    </div>
+  );
+}
+
 export const metadata: Metadata = {
   title: 'About Us — Rentora Mobility',
   description: 'The story of Rentora Mobility — built on real mobility experience, operational discipline and a genuine commitment to the traveller. Meet our founder and leadership team.',
@@ -30,7 +86,7 @@ export default function AboutPage() {
       <section className="relative">
         <div className="absolute inset-0">
           <img
-            src="/images/team/about-hero.jpg"
+            src="/images/about us/hero.png"
             alt="Rentora Mobility premium vehicle on the road"
             className="h-full w-full object-cover"
           />
@@ -68,6 +124,10 @@ export default function AboutPage() {
               Today, Rentora Mobility serves self-drive and chauffeur-driven travellers across the country, backed by the same
               operational discipline and customer-first thinking that started it all.
             </p>
+          </div>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2">
+            <StoryImage src="/images/about us/company story.jpg" alt="The Rentora Mobility founding story" />
+            <StoryImage src="/images/about us/company story (2).jpg" alt="Rentora Mobility team on the road" />
           </div>
         </div>
       </section>
@@ -126,6 +186,60 @@ export default function AboutPage() {
                 <p className="text-sm leading-relaxed text-muted-foreground">{val.text}</p>
               </MotionDiv>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mission & Vision imagery */}
+      <section className="section-pad bg-card/30">
+        <div className="container-lux space-y-20">
+          <FeatureBlock
+            eyebrow="Our Mission"
+            title="Mobility that feels effortless"
+            body="We exist to remove the friction from every journey — transparent pricing, verified vehicles and professional chauffeurs who treat your time and comfort as the priority. From a quick airport transfer to a multi-day outstation trip, the experience should feel effortless and human."
+            image="/images/about us/mission.jpg"
+            imageAlt="Rentora Mobility mission in action"
+          />
+          <FeatureBlock
+            eyebrow="Our Vision"
+            title="Redefining how India travels"
+            body="We are building a trusted mobility platform where premium service is the default, not the exception. By combining operational discipline with technology, we aim to set a new benchmark for safety, reliability and care across India's roads."
+            image="/images/about us/vision.jpg"
+            imageAlt="The Rentora Mobility vision for Indian mobility"
+            reverse
+          />
+        </div>
+      </section>
+
+      {/* Wide Range of Vehicles */}
+      <section className="section-pad">
+        <div className="container-lux">
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            <MotionDiv initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <SectionHeading
+                eyebrow="Our Fleet"
+                title="A Wide Range of Vehicles"
+                subtitle="From economical hatchbacks to luxury limousines and executive vans — a car for every journey and budget, maintained to the highest standards."
+                center={false}
+              />
+              <div className="mt-6">
+                <Button asChild className="btn-gold rounded-full">
+                  <Link href="/fleet">
+                    Explore the Fleet <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </MotionDiv>
+            <MotionDiv initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border">
+                  <img src="/images/about us/wide range of wehciles.jpg" alt="Rentora Mobility wide range of vehicles" className="h-full w-full object-cover" loading="lazy" />
+                </div>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-3xl border border-border">
+                  <img src="/images/about us/Minimalist Animated Car Rental Deals Instagram Story.png" alt="Rentora Mobility car rental offers" className="h-full w-full object-cover" loading="lazy" />
+                </div>
+              </div>
+            </MotionDiv>
           </div>
         </div>
       </section>

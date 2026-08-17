@@ -67,7 +67,8 @@ export default function DestinationDetailPage({ params }: PageProps) {
                 {destination.state}
               </Badge>
             </div>
-            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">{destination.name}</h1>
+            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">{destination.cityName}</h1>
+            <p className="mt-2 text-sm font-medium uppercase tracking-[0.2em] text-gold">{destination.name} · {destination.state}</p>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl">{destination.shortDescription}</p>
           </div>
         </div>
@@ -76,7 +77,7 @@ export default function DestinationDetailPage({ params }: PageProps) {
       <div className="container-lux px-4 sm:px-6 lg:px-8 pb-20">
         {/* Hero Image */}
         <div className="relative aspect-[16/9] rounded-[2rem] overflow-hidden mb-12">
-          <img src={destination.heroImage} alt={destination.name} className="h-full w-full object-cover" loading="lazy" />
+          <img src={destination.heroImage} alt={destination.cityName} className="h-full w-full object-cover" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         </div>
 

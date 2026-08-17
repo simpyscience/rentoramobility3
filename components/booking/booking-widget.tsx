@@ -57,7 +57,7 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
         </div>
         <div className="mt-4 flex justify-end">
           <Button type="submit" className="btn-gold rounded-full px-8 h-12 text-base group">
-            <Search className="h-5 w-5 mr-2" /> Search Cars
+            <ArrowRight className="h-5 w-5 mr-2" /> Book Now
             <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
           </Button>
         </div>

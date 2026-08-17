@@ -30,7 +30,7 @@ export default function DestinationsPage() {
           {DESTINATIONS.map((destination) => (
             <Link key={destination.slug} href={`/destinations/${destination.slug}`} className="group luxury-card overflow-hidden h-full flex flex-col">
               <div className="relative aspect-[16/10] overflow-hidden">
-                <img src={destination.heroImage} alt={destination.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                <img src={destination.heroImage} alt={destination.cityName} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute top-4 left-4">
                   <Badge className="bg-gold/90 text-[hsl(var(--gold-foreground))] border-0 text-[10px] font-semibold uppercase tracking-wider">
@@ -38,7 +38,7 @@ export default function DestinationsPage() {
                   </Badge>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                  <h2 className="font-display text-2xl font-semibold">{destination.name}</h2>
+                  <h2 className="font-display text-2xl font-semibold">{destination.cityName}</h2>
                   <p className="mt-1 text-xs text-white/70 line-clamp-2">{destination.shortDescription}</p>
                 </div>
               </div>

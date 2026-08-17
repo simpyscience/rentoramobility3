@@ -12,7 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
 import { CARS, getPopularCars } from '@/lib/data/cars';
-import { FAQS, WHY_CHOOSE_US, POPULAR_DESTINATIONS } from '@/lib/data/site';
+import { FAQS, WHY_CHOOSE_US } from '@/lib/data/site';
+import { DESTINATIONS } from '@/lib/data/destinations';
 import { getCarAssetPath } from '@/lib/data/images';
 import { ChauffeursCityGuides } from '@/components/sections/chauffeurs-city-guides';
 import { PartnerSection } from '@/components/sections/partner-section';
@@ -188,12 +189,12 @@ export default function HomePage() {
       <section className="section-pad bg-card/30">
         <div className="container-lux">
           <SectionHeading
-            eyebrow="Popular Routes"
+            eyebrow="Popular Destinations"
             title="Outstation Destinations"
-            subtitle="Discover India's most loved road trip routes with reliable cars and experienced drivers."
+            subtitle="Discover India's most loved travel destinations with reliable cars and experienced drivers."
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-            {POPULAR_DESTINATIONS.map((dest, i) => (
+            {DESTINATIONS.slice(0, 6).map((dest, i) => (
               <motion.div
                 key={dest.slug}
                 initial={{ opacity: 0, y: 30 }}
@@ -203,15 +204,16 @@ export default function HomePage() {
               >
                 <Link href={`/destinations/${dest.slug}`} className="group luxury-card overflow-hidden h-full flex flex-col">
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <img src={dest.image} alt={`${dest.from} to ${dest.to}`} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                    <img src={dest.heroImage} alt={dest.cityName} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <div className="absolute top-4 left-4">
+                      <span className="inline-block rounded-full bg-gold/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[hsl(var(--gold-foreground))]">
+                        {dest.state}
+                      </span>
+                    </div>
                     <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
-                      <div className="flex items-center gap-2 text-sm font-medium mb-1">
-                        <span>{dest.from}</span>
-                        <ArrowRight className="h-3.5 w-3.5 text-gold" />
-                        <span>{dest.to}</span>
-                      </div>
-                      <p className="text-xs text-white/70 line-clamp-2">{dest.description}</p>
+                      <div className="font-display text-2xl font-semibold leading-tight">{dest.cityName}</div>
+                      <p className="mt-1 text-xs text-white/70 line-clamp-2">{dest.shortDescription}</p>
                     </div>
                   </div>
                 </Link>

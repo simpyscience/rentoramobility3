@@ -8,12 +8,14 @@ export function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={`flex items-center gap-2.5 shrink-0 ${className || ''}`}>
       {!broken ? (
-        <img
-          src="/brand/rentora-mobility-logo.png"
-          alt="Rentora Mobility"
-          onError={() => setBroken(true)}
-          className="h-10 w-auto object-contain"
-        />
+        <span className="flex items-center justify-center rounded-xl bg-[hsl(222,47%,10%)]/70 px-2.5 py-1.5 backdrop-blur-sm">
+          <img
+            src="/brand/rentora-mobility-logo.png"
+            alt="Rentora Mobility"
+            onError={() => setBroken(true)}
+            className="h-8 w-auto object-contain md:h-11"
+          />
+        </span>
       ) : (
         <div className="flex items-center gap-2.5">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-light via-gold to-gold-dark shadow-gold">
