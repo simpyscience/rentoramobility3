@@ -74,7 +74,7 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
           ))}
         </div>
         <Button type="submit" className="btn-gold w-full mt-3 rounded-xl">
-          <Search className="h-4 w-4 mr-2" /> Search Cars
+          <Search className="h-4 w-4 mr-2" /> Book Now
         </Button>
       </form>
     );
@@ -94,7 +94,7 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
         ))}
       </div>
       <Button type="submit" className="btn-gold w-full mt-5 rounded-xl h-12 text-base group">
-        <Search className="h-5 w-5 mr-2" /> Search Available Cars
+        <Search className="h-5 w-5 mr-2" /> Book Now
         <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
       </Button>
     </motion.form>

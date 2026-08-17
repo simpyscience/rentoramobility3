@@ -3,17 +3,32 @@
 import * as React from 'react';
 import Link from 'next/link';
 
-export function Logo({ className }: { className?: string }) {
+type LogoVariant = 'nav' | 'footer';
+
+export function Logo({
+  className,
+  variant = 'nav',
+}: {
+  className?: string;
+  variant?: LogoVariant;
+}) {
   const [broken, setBroken] = React.useState(false);
+
+  // Supplied logo asset is an opaque (RGB) PNG ~1774x887 — a wide horizontal
+  // brand mark. Rendered inside a dark rounded chip so it reads clearly on both
+  // the dark navbar and the light footer. Aspect ratio ~2:1, so height drives width.
+  const sizeClass =
+    variant === 'footer' ? 'h-[104px]' : 'h-16 md:h-[72px]';
+
   return (
     <Link href="/" className={`flex items-center gap-2.5 shrink-0 ${className || ''}`}>
       {!broken ? (
-        <span className="flex items-center justify-center rounded-xl bg-[hsl(222,47%,10%)]/70 px-2.5 py-1.5 backdrop-blur-sm">
+        <span className="flex items-center justify-center rounded-xl bg-[hsl(222,47%,10%)] px-3 py-2 shadow-luxury">
           <img
             src="/brand/rentora-mobility-logo.png"
             alt="Rentora Mobility"
             onError={() => setBroken(true)}
-            className="h-8 w-auto object-contain md:h-11"
+            className={`${sizeClass} w-auto object-contain`}
           />
         </span>
       ) : (

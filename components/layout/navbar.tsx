@@ -61,10 +61,19 @@ export function Navbar() {
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-all duration-500',
           scrolled
-            ? 'glass shadow-luxury py-2'
+            ? 'bg-[hsl(222,47%,9%)]/95 backdrop-blur-xl shadow-luxury py-3'
             : 'bg-transparent py-4'
         )}
       >
+        {/* Top scrim: keeps the light logo + nav links readable over both dark
+            heroes and light inner pages while the navbar stays transparent (so it
+            never hides page content). Replaced by the solid bar once scrolled. */}
+        {!scrolled && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/55 to-transparent"
+          />
+        )}
         <nav className="container-lux flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Logo />
 
@@ -83,7 +92,7 @@ export function Navbar() {
                     'flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
                     isActive(link.href)
                       ? 'text-gold'
-                      : 'text-foreground/80 hover:text-gold'
+                      : 'text-white/75 hover:text-gold'
                   )}
                 >
                   {link.label}
@@ -122,7 +131,7 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <a
               href={telLink()}
-              className="hidden xl:flex items-center gap-2 rounded-full border border-border/60 px-3 py-2 text-sm font-medium hover:border-gold/50 hover:text-gold transition-colors"
+              className="hidden xl:flex items-center gap-2 rounded-full border border-white/20 px-3 py-2 text-sm font-medium text-white/80 hover:border-gold/50 hover:text-gold transition-colors"
             >
               <Phone className="h-4 w-4" />
               {CONTACT.phoneDisplay}

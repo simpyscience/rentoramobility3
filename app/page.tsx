@@ -18,7 +18,7 @@ import { getCarAssetPath } from '@/lib/data/images';
 import { ChauffeursCityGuides } from '@/components/sections/chauffeurs-city-guides';
 import { PartnerSection } from '@/components/sections/partner-section';
 
-const HERO_IMAGE = '/images/cars/fleet.jpg';
+const HERO_IMAGE = '/homepage/homepage png.png';
 
 const VALUE_POINTS = [
   { icon: ShieldCheck, text: 'Safe & Reliable' },
@@ -52,7 +52,7 @@ export default function HomePage() {
               <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold mb-5">
                 Premium Travel. Professional Service.
               </div>
-              <h1 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] font-semibold tracking-tight leading-[1.1] mb-5 text-white">
+              <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight leading-[1.1] mb-5 text-white">
                  India&apos;s Premium <span className="text-gradient-gold">Mobility Partner</span>
               </h1>
               <p className="text-white/70 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
@@ -97,11 +97,13 @@ export default function HomePage() {
             >
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-gold/20 to-transparent rounded-full blur-3xl opacity-30" />
-                <img
-                  src={HERO_IMAGE}
-                  alt="Premium Rentora Mobility fleet car"
-                  className="relative h-full w-full object-cover object-center rounded-2xl max-h-[520px] drop-shadow-2xl"
-                />
+                <div className="relative overflow-hidden rounded-2xl bg-[hsl(222,47%,12%)] shadow-luxury">
+                  <img
+                    src={HERO_IMAGE}
+                    alt="Rentora Mobility — India's premium mobility partner"
+                    className="relative w-full h-auto object-contain object-center drop-shadow-2xl"
+                  />
+                </div>
               </div>
             </motion.div>
           </div>

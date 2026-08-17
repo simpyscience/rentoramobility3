@@ -43,6 +43,10 @@ export default function DestinationDetailPage({ params }: PageProps) {
 
   const recommendedCars = getDestinationRecommendedCars(destination);
   const gallery = destination.gallery.length > 1 ? destination.gallery : [destination.heroImage];
+  const routeOrigin =
+    destination.travelInfo.find((t) => t.city !== destination.cityName)?.city ||
+    destination.travelInfo[0]?.city ||
+    '';
 
   return (
     <>
@@ -68,7 +72,7 @@ export default function DestinationDetailPage({ params }: PageProps) {
               </Badge>
             </div>
             <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">{destination.cityName}</h1>
-            <p className="mt-2 text-sm font-medium uppercase tracking-[0.2em] text-gold">{destination.name} · {destination.state}</p>
+            <p className="mt-2 text-sm font-medium uppercase tracking-[0.2em] text-gold">Outstation from {routeOrigin} · {destination.state}</p>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl">{destination.shortDescription}</p>
           </div>
         </div>

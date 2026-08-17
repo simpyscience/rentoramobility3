@@ -164,13 +164,18 @@ export const CAR_IMAGE_MAP: Record<string, string> = {
  * and cannot be confidently identified without visual inspection.
  */
 export const DESTINATION_IMAGE_MAP: Record<string, string> = {
-  // Confidently identified real local destination photographs.
-  // Filenames clearly indicate the city, so they are mapped to the
-  // corresponding destination route. The remaining routes keep their
-  // deterministic photo / SVG fallback in getDestinationAssetPath().
-  'mumbai-pune': '/images/destinations/mumbai-gateway-of-india.jpg',
+  // Confidently identified real local destination photographs (filename clearly
+  // indicates the city). Mapped ONLY to the destination that the photo depicts so a
+  // city never shows another city's image. Routes without a confidently identified
+  // local photo fall back to a real generic photograph / SVG in
+  // getDestinationAssetPath() — never to an unrelated city's image.
   'delhi-jaipur': '/images/destinations/jaipur-rajasthan.jpg',
   'delhi-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
+  'jaipur-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
+  // NOTE: 'mumbai-gateway-of-india.jpg' is intentionally NOT mapped to 'mumbai-pune'.
+  // It depicts Mumbai (the route origin), but the destination's primary city is Pune,
+  // so mapping it would show the wrong city. It is used correctly for the 'mumbai'
+  // city guide in lib/data/site.ts instead.
 };
 
 /* ------------------------------------------------------------------ */

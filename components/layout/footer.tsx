@@ -54,7 +54,7 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Logo />
+            <Logo variant="footer" />
             <p className="text-sm text-muted-foreground max-w-sm mb-6 mt-4">
               India&apos;s premium car rental & mobility platform. From economy to luxury, chauffeur-driven and self-drive — available across India.
             </p>

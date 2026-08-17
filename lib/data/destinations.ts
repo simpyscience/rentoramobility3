@@ -35,7 +35,7 @@ const DESTINATION_ASSET = (slug: string) => getDestinationAssetPath(slug);
 export const DESTINATIONS: Destination[] = [
   {
     slug: 'delhi-jaipur',
-    name: 'Delhi to Jaipur',
+    name: 'Jaipur',
     cityName: 'Jaipur',
     state: 'Rajasthan',
     shortDescription: 'A royal road trip through forts, food and desert charm.',
@@ -62,7 +62,7 @@ export const DESTINATIONS: Destination[] = [
   },
   {
     slug: 'delhi-agra',
-    name: 'Delhi to Agra',
+    name: 'Agra',
     cityName: 'Agra',
     state: 'Uttar Pradesh',
     shortDescription: 'A timeless journey to one of India’s most iconic monuments.',
@@ -89,7 +89,7 @@ export const DESTINATIONS: Destination[] = [
   },
   {
     slug: 'mumbai-pune',
-    name: 'Mumbai to Pune',
+    name: 'Pune',
     cityName: 'Pune',
     state: 'Maharashtra',
     shortDescription: 'A stylish weekend escape with food, forts and city energy.',
@@ -116,7 +116,7 @@ export const DESTINATIONS: Destination[] = [
   },
   {
     slug: 'bangalore-goa',
-    name: 'Bangalore to Goa',
+    name: 'Goa',
     cityName: 'Goa',
     state: 'Goa',
     shortDescription: 'An adventure-filled coastal drive with beaches and sunset stops.',
@@ -143,7 +143,7 @@ export const DESTINATIONS: Destination[] = [
   },
   {
     slug: 'delhi-udaipur',
-    name: 'Delhi to Udaipur',
+    name: 'Udaipur',
     cityName: 'Udaipur',
     state: 'Rajasthan',
     shortDescription: 'A royal road trip into the City of Lakes and heritage charm.',
@@ -170,7 +170,7 @@ export const DESTINATIONS: Destination[] = [
   },
   {
     slug: 'jaipur-udaipur',
-    name: 'Jaipur to Udaipur',
+    name: 'Udaipur',
     cityName: 'Udaipur',
     state: 'Rajasthan',
     shortDescription: 'A heritage-rich route through palaces, lakes and desert landscapes.',

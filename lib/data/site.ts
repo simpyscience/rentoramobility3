@@ -8,13 +8,13 @@ export interface City {
 }
 
 export const CITIES: City[] = [
-  { slug: 'delhi', name: 'Delhi', state: 'NCR', image: getDestinationAssetPath('delhi-jaipur') },
-  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', image: getDestinationAssetPath('mumbai-pune') },
+  { slug: 'delhi', name: 'Delhi', state: 'NCR', image: getDestinationAssetPath('delhi-agra') },
+  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', image: '/images/destinations/mumbai-gateway-of-india.jpg' },
   { slug: 'bangalore', name: 'Bangalore', state: 'Karnataka', image: getDestinationAssetPath('bangalore-goa') },
   { slug: 'jaipur', name: 'Jaipur', state: 'Rajasthan', image: getDestinationAssetPath('delhi-jaipur') },
   { slug: 'udaipur', name: 'Udaipur', state: 'Rajasthan', image: getDestinationAssetPath('delhi-udaipur') },
   { slug: 'goa', name: 'Goa', state: 'Goa', image: getDestinationAssetPath('bangalore-goa') },
-  { slug: 'chandigarh', name: 'Chandigarh', state: 'Punjab', image: getDestinationAssetPath('delhi-jaipur') },
+  { slug: 'chandigarh', name: 'Chandigarh', state: 'Punjab', image: getDestinationAssetPath('delhi-agra') },
   { slug: 'hyderabad', name: 'Hyderabad', state: 'Telangana', image: getDestinationAssetPath('delhi-agra') },
   { slug: 'pune', name: 'Pune', state: 'Maharashtra', image: getDestinationAssetPath('mumbai-pune') },
   { slug: 'agra', name: 'Agra', state: 'Uttar Pradesh', image: getDestinationAssetPath('delhi-agra') },
