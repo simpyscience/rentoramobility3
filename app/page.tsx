@@ -15,8 +15,17 @@ import { CARS, getPopularCars } from '@/lib/data/cars';
 import { FAQS, WHY_CHOOSE_US } from '@/lib/data/site';
 import { DESTINATIONS } from '@/lib/data/destinations';
 import { getCarAssetPath } from '@/lib/data/images';
-import { ChauffeursCityGuides } from '@/components/sections/chauffeurs-city-guides';
-import { PartnerSection } from '@/components/sections/partner-section';
+import dynamic from 'next/dynamic';
+// Below-the-fold sections: code-split so they don't bloat the initial/critical
+// bundle or block first paint / navigation responsiveness.
+const ChauffeursCityGuides = dynamic(
+  () => import('@/components/sections/chauffeurs-city-guides').then((m) => m.ChauffeursCityGuides),
+  { ssr: true }
+);
+const PartnerSection = dynamic(
+  () => import('@/components/sections/partner-section').then((m) => m.PartnerSection),
+  { ssr: true }
+);
 
 const HERO_IMAGE = '/homepage/homepage png.png';
 
@@ -38,7 +47,18 @@ export default function HomePage() {
     <>
       {/* HERO */}
       <section className="relative bg-[hsl(222,47%,8%)] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(222,47%,8%)] via-[hsl(222,47%,12%)] to-[hsl(222,47%,8%)] opacity-90" />
+        {/* Supplied official Rentora Mobility homepage hero visual */}
+        <div className="absolute inset-0">
+          <img
+            src={HERO_IMAGE}
+            alt="Rentora Mobility — India's premium mobility partner"
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full object-cover object-center"
+          />
+        </div>
+        {/* Legibility overlay — keeps the logo, headline, CTAs and booking widget readable over the supplied visual */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(222,47%,8%)]/95 via-[hsl(222,47%,8%)]/75 to-[hsl(222,47%,8%)]/35" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(43_74%_50%/_0.08),transparent_50%)]" />
         <div className="container-lux relative px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-32 md:pb-40">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center">
@@ -88,24 +108,7 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* RIGHT — Hero Image */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.15 }}
-              className="relative hidden lg:block"
-            >
-              <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-gold/20 to-transparent rounded-full blur-3xl opacity-30" />
-                <div className="relative overflow-hidden rounded-2xl bg-[hsl(222,47%,12%)] shadow-luxury">
-                  <img
-                    src={HERO_IMAGE}
-                    alt="Rentora Mobility — India's premium mobility partner"
-                    className="relative w-full h-auto object-contain object-center drop-shadow-2xl"
-                  />
-                </div>
-              </div>
-            </motion.div>
+            {/* RIGHT column intentionally empty — the supplied Rentora homepage hero visual shows through here. */}
           </div>
         </div>
 

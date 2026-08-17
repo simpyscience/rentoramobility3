@@ -4,9 +4,8 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { VoiceAssistant } from '@/components/voice-assistant/voice-assistant';
-import { FloatingActions } from '@/components/layout/floating-actions';
 import { StructuredData } from '@/components/seo/structured-data';
+import { LazyGlobals } from '@/components/layout/lazy-globals';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -97,8 +96,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
-          <FloatingActions />
-          <VoiceAssistant />
+          <LazyGlobals />
         </ThemeProvider>
       </body>
     </html>
