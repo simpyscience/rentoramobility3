@@ -3,14 +3,14 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Phone, MessageCircle, ShieldCheck, Users, Car, Clock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Phone, MessageCircle, ShieldCheck, Car, Clock, ArrowRight } from 'lucide-react';
 import { BookingWidget } from '@/components/booking/booking-widget';
 import { CarCard } from '@/components/fleet/car-card';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
+import { CONTACT, telLink } from '@/lib/data/contact';
 import { CARS, getPopularCars } from '@/lib/data/cars';
 import { FAQS, WHY_CHOOSE_US } from '@/lib/data/site';
 import { DESTINATIONS } from '@/lib/data/destinations';
@@ -29,12 +29,6 @@ const PartnerSection = dynamic(
 
 const HERO_IMAGE = '/homepage/homepage png.png';
 
-const VALUE_POINTS = [
-  { icon: ShieldCheck, text: 'Safe & Reliable' },
-  { icon: Users, text: 'Professional Chauffeurs' },
-  { icon: Car, text: 'Premium Fleet' },
-];
-
 export default function HomePage() {
   const popularCars = getPopularCars();
   const featuredCars = React.useMemo(() => {
@@ -45,9 +39,12 @@ export default function HomePage() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative bg-[hsl(222,47%,8%)] overflow-hidden">
-        {/* Supplied official Rentora Mobility homepage hero visual */}
+      {/* HERO — single, coherent Rentora Mobility homepage built on the supplied
+          car/road design. The supplied homepage asset is the visual source of truth;
+          the global navbar (layout) and this single functional booking widget are the
+          only foreground elements, so there is exactly one navbar, one logo, one hero
+          and one booking form (no duplicated headline / navigation / booking layer). */}
+      <section className="relative overflow-hidden min-h-[88vh] flex flex-col justify-end">
         <div className="absolute inset-0">
           <img
             src={HERO_IMAGE}
@@ -57,72 +54,9 @@ export default function HomePage() {
             className="h-full w-full object-cover object-center"
           />
         </div>
-        {/* Legibility overlay — keeps the logo, headline, CTAs and booking widget readable over the supplied visual */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(222,47%,8%)]/95 via-[hsl(222,47%,8%)]/75 to-[hsl(222,47%,8%)]/35" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(43_74%_50%/_0.08),transparent_50%)]" />
-        <div className="container-lux relative px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-32 md:pb-40">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-8 items-center">
-            {/* LEFT — Content */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="max-w-xl relative z-10"
-            >
-              <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold mb-5">
-                Premium Travel. Professional Service.
-              </div>
-              <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight leading-[1.1] mb-5 text-white">
-                 India&apos;s Premium <span className="text-gradient-gold">Mobility Partner</span>
-              </h1>
-              <p className="text-white/70 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
-                Experience comfort, safety, and reliability with Rentora Mobility. Your journey, our responsibility.
-              </p>
-
-              <div className="flex flex-wrap gap-6 md:gap-8 mb-10">
-                {VALUE_POINTS.map((point) => (
-                  <div key={point.text} className="flex items-center gap-3 text-sm font-medium text-white/90">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5">
-                      <point.icon className="h-4 w-4 text-gold" />
-                    </div>
-                    <div className="leading-tight">
-                      <div className="font-semibold text-white">{point.text.split(' ').slice(0, -1).join(' ')}</div>
-                      <div className="text-white/60 text-xs">{point.text.split(' ').slice(-1)[0]}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <a href={telLink()} className="flex items-center gap-2 rounded-full bg-white text-[hsl(222,47%,8%)] px-5 py-2.5 text-sm font-semibold hover:bg-white/90 transition-colors">
-                  <Phone className="h-4 w-4" /> {CONTACT.phoneDisplay}
-                </a>
-                <a
-                  href={whatsappLink('Hello Rentora Mobility, I would like to book a car.')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-                >
-                  <MessageCircle className="h-4 w-4" /> WhatsApp Us
-                </a>
-              </div>
-            </motion.div>
-
-            {/* RIGHT column intentionally empty — the supplied Rentora homepage hero visual shows through here. */}
-          </div>
-        </div>
-
-        {/* Booking Widget — white card at bottom */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <div className="container-lux px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <BookingWidget variant="hero" />
-            </motion.div>
-          </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        <div className="relative container-lux px-4 sm:px-6 lg:px-8 pb-10 md:pb-16">
+          <BookingWidget variant="hero" />
         </div>
       </section>
 
