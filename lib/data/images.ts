@@ -136,6 +136,16 @@ export const DESTINATION_IMAGE_MAP: Record<string, string> = {
   'delhi-agra': '/images/destinations/agra.jpg',
   'delhi-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
   'jaipur-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
+  'delhi': '/images/destinations/delhi.jpg',
+  'mumbai': '/images/destinations/mumbai.jpg',
+  'varanasi': '/images/destinations/varanashi.jpg',
+  'jodhpur': '/images/destinations/jodhpur.jpg',
+  'jaisalmer': '/images/destinations/jaisalmer.jpg',
+  'kedarnath': '/images/destinations/kedarnath.jpg',
+  'jammu-kashmir': '/images/destinations/jammu and kashmir.jpg',
+  'gurugram': '/images/destinations/gurugram.jpg',
+  'manali': '/images/destinations/Manali.jfif',
+  'arunachal-pradesh': '/images/destinations/arunachal pradesh  bomdila.jpg',
 };
 
 /**
@@ -152,6 +162,16 @@ const DESTINATION_CITY_TOKENS: Record<string, string[]> = {
   'bangalore-goa': ['goa'],
   'delhi-udaipur': ['udaipur'],
   'jaipur-udaipur': ['udaipur'],
+  'delhi': ['delhi'],
+  'mumbai': ['mumbai'],
+  'varanasi': ['varanasi', 'banaras', 'kashi'],
+  'jodhpur': ['jodhpur'],
+  'jaisalmer': ['jaisalmer'],
+  'kedarnath': ['kedarnath'],
+  'jammu-kashmir': ['jammu', 'kashmir'],
+  'gurugram': ['gurugram'],
+  'manali': ['manali'],
+  'arunachal-pradesh': ['arunachal', 'bomdila'],
 };
 
 /* ------------------------------------------------------------------ */

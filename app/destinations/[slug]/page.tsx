@@ -2,13 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Clock3, MapPinned, Compass, Hotel, UtensilsCrossed, CarFront, Fuel, BadgeCheck, Trees, ParkingCircle, SunMedium } from 'lucide-react';
-import { getDestinationBySlug, getDestinationRecommendedCars } from '@/lib/data/destinations';
+import { getDestinationBySlug, getDestinationRecommendedCars, DESTINATIONS } from '@/lib/data/destinations';
 import { CarCard } from '@/components/fleet/car-card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 interface PageProps {
   params: { slug: string };
+}
+
+export function generateStaticParams() {
+  return DESTINATIONS.map((destination) => ({ slug: destination.slug }));
 }
 
 export function generateMetadata({ params }: PageProps): Metadata {
