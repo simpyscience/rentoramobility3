@@ -8,8 +8,8 @@ export interface City {
 }
 
 export const CITIES: City[] = [
-  { slug: 'delhi', name: 'Delhi', state: 'NCR', image: getDestinationAssetPath('delhi-agra') },
-  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', image: '/images/destinations/mumbai-gateway-of-india.jpg' },
+  { slug: 'delhi', name: 'Delhi', state: 'NCR', image: '/images/destinations/delhi.jpg' },
+  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', image: '/images/destinations/mumbai.jpg' },
   { slug: 'bangalore', name: 'Bangalore', state: 'Karnataka', image: getDestinationAssetPath('bangalore-goa') },
   { slug: 'jaipur', name: 'Jaipur', state: 'Rajasthan', image: getDestinationAssetPath('delhi-jaipur') },
   { slug: 'udaipur', name: 'Udaipur', state: 'Rajasthan', image: getDestinationAssetPath('delhi-udaipur') },

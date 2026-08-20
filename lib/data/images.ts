@@ -41,67 +41,30 @@ export const LOCAL_CAR_IMAGES: string[] = [
 ];
 
 /**
- * All real destination images available in /public/images/destinations/
- * These have generic filenames and cannot be confidently identified
- * without visual inspection. They are listed here for future mapping.
+ * Every real destination image discovered in /public/images/destinations/.
+ *
+ * This list is GENERATED at build time (see scripts/generate-destination-images.mjs
+ * and the "build"/"predev" wiring) from the actual folder contents, so no valid
+ * supplied image (.jpg, .jpeg, .png, .webp, .jfif) is ever silently ignored.
+ * Files whose filename does not clearly identify a city (the bulk
+ * "download (6)-images-*" photographs and the few ambiguous .jfif/.png files)
+ * live here as the deterministic fallback pool; confidently identified city
+ * photographs are resolved through DESTINATION_IMAGE_MAP and
+ * DESTINATION_CITY_TOKENS so a destination never shows the wrong city.
  */
-export const LOCAL_DESTINATION_IMAGES: string[] = [
-  '/images/destinations/download (6)-images-4.jpg',
-  '/images/destinations/download (6)-images-5.jpg',
-  '/images/destinations/download (6)-images-6.jpg',
-  '/images/destinations/download (6)-images-7.jpg',
-  '/images/destinations/download (6)-images-8.jpg',
-  '/images/destinations/download (6)-images-9.jpg',
-  '/images/destinations/download (6)-images-10.jpg',
-  '/images/destinations/download (6)-images-11.jpg',
-  '/images/destinations/download (6)-images-12.jpg',
-  '/images/destinations/download (6)-images-13.jpg',
-  '/images/destinations/download (6)-images-14.jpg',
-  '/images/destinations/download (6)-images-15.jpg',
-  '/images/destinations/download (6)-images-16.jpg',
-  '/images/destinations/download (6)-images-17.jpg',
-  '/images/destinations/download (6)-images-18.jpg',
-  '/images/destinations/download (6)-images-23.jpg',
-  '/images/destinations/download (6)-images-24.jpg',
-  '/images/destinations/download (6)-images-25.jpg',
-  '/images/destinations/download (6)-images-26.jpg',
-  '/images/destinations/download (6)-images-27.jpg',
-  '/images/destinations/download (6)-images-28.jpg',
-  '/images/destinations/download (6)-images-29.jpg',
-  '/images/destinations/download (6)-images-30.jpg',
-  '/images/destinations/download (6)-images-34.jpg',
-  '/images/destinations/download (6)-images-36 (1).jpg',
-  '/images/destinations/download (6)-images-36.jpg',
-  '/images/destinations/download (6)-images-37.jpg',
-  '/images/destinations/download (6)-images-39.jpg',
-  '/images/destinations/download (6)-images-40.jpg',
-  '/images/destinations/download (6)-images-41.jpg',
-  '/images/destinations/download (6)-images-42.jpg',
-  '/images/destinations/download (6)-images-43.jpg',
-  '/images/destinations/download (6)-images-45.jpg',
-  '/images/destinations/download (6)-images-46.jpg',
-  '/images/destinations/download (6)-images-47.jpg',
-  '/images/destinations/download (6)-images-49.jpg',
-  '/images/destinations/download (6)-images-50.jpg',
-  '/images/destinations/download (6)-images-51.jpg',
-  '/images/destinations/download (6)-images-54.jpg',
-  '/images/destinations/download (6)-images-55.jpg',
-  '/images/destinations/download (6)-images-57.jpg',
-  '/images/destinations/download (6)-images-58.jpg',
-  '/images/destinations/download (6)-images-59.jpg',
-  '/images/destinations/download (6)-images-62.jpg',
-  '/images/destinations/download (6)-images-63.jpg',
-  '/images/destinations/download (6)-images-64.jpg',
-  '/images/destinations/download (6)-images-65.jpg',
-  '/images/destinations/download (6)-images-66.jpg',
-  '/images/destinations/download (6)-images-67.jpg',
-  '/images/destinations/download (6)-images-69.jpg',
-  '/images/destinations/download (6)-images-70.jpg',
-  '/images/destinations/download (6)-images-71.jpg',
-  '/images/destinations/download (6)-images-81.jpg',
-  '/images/destinations/download (6)-images-83.jpg',
-  '/images/destinations/download (6)-images-84.jpg',
-];
+import { LOCAL_DESTINATION_IMAGES } from './destination-images.generated';
+
+/**
+ * Generic, unidentifiable supplied photographs (the original "download (6)-images-*"
+ * batch). These are used as the deterministic fallback for routes that have NO
+ * supplied photo clearly depicting their destination city (e.g. Pune, Goa). Using
+ * only this generic pool guarantees a card never shows ANOTHER city's identifiable
+ * photograph — the "never map a wrong city" rule — while still rendering a real
+ * local supplied image rather than a missing/broken path.
+ */
+export const DESTINATION_GENERIC_POOL: string[] = LOCAL_DESTINATION_IMAGES.filter((p) =>
+  /download \(6\)-images-/i.test(p.split('/').pop() || '')
+);
 
 /**
  * All chauffeur images available in /public/images/chauffers/
@@ -163,19 +126,32 @@ export const CAR_IMAGE_MAP: Record<string, string> = {
  * Currently empty — all local destination JPGs have generic filenames
  * and cannot be confidently identified without visual inspection.
  */
+/**
+ * Confidently identified real local destination photographs. Each image's
+ * filename clearly names the city it depicts, so it is mapped ONLY to the
+ * matching destination/route — a city never shows another city's image.
+ */
 export const DESTINATION_IMAGE_MAP: Record<string, string> = {
-  // Confidently identified real local destination photographs (filename clearly
-  // indicates the city). Mapped ONLY to the destination that the photo depicts so a
-  // city never shows another city's image. Routes without a confidently identified
-  // local photo fall back to a real generic photograph / SVG in
-  // getDestinationAssetPath() — never to an unrelated city's image.
   'delhi-jaipur': '/images/destinations/jaipur-rajasthan.jpg',
+  'delhi-agra': '/images/destinations/agra.jpg',
   'delhi-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
   'jaipur-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
-  // NOTE: 'mumbai-gateway-of-india.jpg' is intentionally NOT mapped to 'mumbai-pune'.
-  // It depicts Mumbai (the route origin), but the destination's primary city is Pune,
-  // so mapping it would show the wrong city. It is used correctly for the 'mumbai'
-  // city guide in lib/data/site.ts instead.
+};
+
+/**
+ * City-name tokens used to discover a correctly-matching supplied image for a
+ * route/destination by scanning LOCAL_DESTINATION_IMAGES. This keeps mapping
+ * robust to the exact supplied filename (e.g. jaipur.jpg, jaipur.jfif and
+ * jaipur-rajasthan.jpg all resolve to the Jaipur routes; agra.jpg / aagra.jpg
+ * both resolve to the Agra route).
+ */
+const DESTINATION_CITY_TOKENS: Record<string, string[]> = {
+  'delhi-jaipur': ['jaipur'],
+  'delhi-agra': ['agra'],
+  'mumbai-pune': ['pune'],
+  'bangalore-goa': ['goa'],
+  'delhi-udaipur': ['udaipur'],
+  'jaipur-udaipur': ['udaipur'],
 };
 
 /* ------------------------------------------------------------------ */
@@ -225,7 +201,6 @@ const PLACEHOLDER_SVG = '/images/cars/placeholder.svg';
 const DESTINATION_SVG_MAP: Record<string, string> = {
   'delhi-jaipur': '/images/destinations/delhi-jaipur.svg',
   'delhi-agra': '/images/destinations/delhi-agra.svg',
-  'mumbai-pune': '/images/destinations/mumbai-pune.svg',
   'bangalore-goa': '/images/destinations/bangalore-goa.svg',
   'delhi-udaipur': '/images/destinations/delhi-udaipur.svg',
   'jaipur-udaipur': '/images/destinations/jaipur-udaipur.svg',
@@ -288,21 +263,42 @@ export function getCarAssetPath(
  * Destination identity/data is never changed — the image asset is independent.
  */
 export function getDestinationAssetPath(slug: string): string {
-  // 1. Explicitly mapped real local image (confidently identified)
+  // 1. Filename-token discovery across the supplied image pool. This is the
+  //    primary mechanism and is robust to the EXACT supplied filename: e.g.
+  //    jaipur.jpg / jaipur.jfif / jaipur-rajasthan.jpg all resolve to the
+  //    Jaipur routes, and agra.jpg / agra (2).jpg / agra taj-e-mehal.jpg all
+  //    resolve to the Agra route. Because LOCAL_DESTINATION_IMAGES is generated
+  //    from the live folder at build time, the match is always an existing file.
+  //    A city never resolves to another city's image because the tokens are the
+  //    destination city names themselves.
+  const tokens = DESTINATION_CITY_TOKENS[slug];
+  if (tokens && LOCAL_DESTINATION_IMAGES.length > 0) {
+    const match = LOCAL_DESTINATION_IMAGES.find((p) => {
+      const base = p.toLowerCase().split('/').pop()!.replace(/\.[^.]+$/, '');
+      return tokens.some((t) => base.includes(t));
+    });
+    if (match) return match;
+  }
+
+  // 2. Explicit confidently-identified mapping (filename clearly names the city).
   const mappedImage = DESTINATION_IMAGE_MAP[slug];
   if (mappedImage) return mappedImage;
 
-  // 2. Deterministic real local photograph (display image)
-  if (LOCAL_DESTINATION_IMAGES.length > 0) {
-    const index = hashString(slug) % LOCAL_DESTINATION_IMAGES.length;
-    return LOCAL_DESTINATION_IMAGES[index];
+  // 3. Generic, unidentifiable supplied photograph. Used for routes that have no
+  //    supplied photo clearly depicting their destination city (e.g. Pune, Goa).
+  //    Restricted to the generic pool so a card never shows ANOTHER city's
+  //    identifiable image ("never map a wrong city"), while still rendering a
+  //    real local supplied image rather than a missing/broken path.
+  if (DESTINATION_GENERIC_POOL.length > 0) {
+    const index = hashString(slug) % DESTINATION_GENERIC_POOL.length;
+    return DESTINATION_GENERIC_POOL[index];
   }
 
-  // 3. Destination SVG fallback (only when no real photo is available)
+  // 4. Destination SVG fallback (only when no real photo is available).
   const svg = DESTINATION_SVG_MAP[slug];
   if (svg) return svg;
 
-  // 4. Generic destination SVG
+  // 5. Generic destination SVG.
   return '/images/destinations/delhi-jaipur.svg';
 }
 
@@ -354,7 +350,15 @@ export function getChauffeurFeatureImages(): string[] {
 export const UNIDENTIFIED_CAR_IMAGES: string[] = [...LOCAL_CAR_IMAGES];
 
 /**
- * List of local destination images that could not be confidently identified.
- * These need visual inspection before being mapped in DESTINATION_IMAGE_MAP.
+ * List of local destination images that could not be confidently mapped to a
+ * specific destination/city. These are real supplied photographs whose filename
+ * does not clearly identify a city (the generic "download (6)-images-*" pool and
+ * a few ambiguous .jfif/.png files) and are therefore only used as generic
+ * display fallbacks — never as a specific city's hero image.
  */
-export const UNIDENTIFIED_DESTINATION_IMAGES: string[] = [...LOCAL_DESTINATION_IMAGES];
+export const UNIDENTIFIED_DESTINATION_IMAGES: string[] = LOCAL_DESTINATION_IMAGES.filter(
+  (p) =>
+    !/(\bjaipur\b|\bagra\b|\budaipur\b|\bmumbai\b|\bgateway-of-india\b|\bdelhi\b)/i.test(
+      p.toLowerCase().split('/').pop()!.replace(/\.[^.]+$/, '')
+    )
+);
