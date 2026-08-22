@@ -49,14 +49,14 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
 
   if (variant === 'hero') {
     return (
-      <form onSubmit={handleSearch} className="bg-white rounded-2xl md:rounded-3xl shadow-luxury p-4 md:p-6">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {fields.slice(0, 4).map((f, i) => (
+      <form onSubmit={handleSearch} className="bg-white rounded-2xl md:rounded-3xl shadow-luxury p-5 md:p-7 w-full">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {fields.map((f, i) => (
             <FieldInput key={i} {...f} hero />
           ))}
         </div>
-        <div className="mt-4 flex justify-end">
-          <Button type="submit" className="btn-gold rounded-full px-8 h-12 text-base group">
+        <div className="mt-5 flex justify-end">
+          <Button type="submit" className="btn-gold rounded-full px-8 h-12 text-base group w-full sm:w-auto">
             <ArrowRight className="h-5 w-5 mr-2" /> Book Now
             <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
           </Button>

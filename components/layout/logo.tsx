@@ -15,22 +15,27 @@ export function Logo({
   const [broken, setBroken] = React.useState(false);
 
   // Supplied logo asset is an opaque (RGB) PNG ~1774x887 — a wide horizontal
-  // brand mark. Rendered inside a dark rounded chip so it reads clearly on both
-  // the dark navbar and the light footer. Aspect ratio ~2:1, so height drives width.
+  // brand mark (~2:1). On the white navbar it sits in a clean white, bordered
+  // board; on the dark footer it keeps a dark chip for contrast. Height drives
+  // width so the aspect ratio is preserved (no stretching / cropping).
   const sizeClass =
-    variant === 'footer' ? 'h-[104px]' : 'h-16 md:h-[72px]';
+    variant === 'footer' ? 'h-[104px]' : 'h-16 md:h-[64px]';
+  const boardClass =
+    variant === 'footer'
+      ? 'bg-[hsl(222,47%,10%)]'
+      : 'bg-white border border-border';
 
   return (
     <Link href="/" className={`flex items-center gap-2.5 shrink-0 ${className || ''}`}>
       {!broken ? (
-        <span className="flex items-center justify-center rounded-xl bg-[hsl(222,47%,10%)] px-3 py-2 shadow-luxury">
-          <img
-            src="/brand/rentora-mobility-logo.png"
-            alt="Rentora Mobility"
-            onError={() => setBroken(true)}
-            className={`${sizeClass} w-auto object-contain`}
-          />
-        </span>
+          <span className={`flex items-center justify-center rounded-xl px-3 py-2 shadow-luxury ${boardClass}`}>
+            <img
+              src="/brand/rentora-mobility-logo.png"
+              alt="Rentora Mobility"
+              onError={() => setBroken(true)}
+              className={`${sizeClass} w-auto object-contain`}
+            />
+          </span>
       ) : (
         <div className="flex items-center gap-2.5">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-light via-gold to-gold-dark shadow-gold">

@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { CARS } from '@/lib/data/cars';
-import { SERVICES, BLOG_POSTS } from '@/lib/data/site';
+import { SERVICES } from '@/lib/data/site';
+import { BLOG_POSTS } from '@/lib/data/blog';
 import { DESTINATIONS } from '@/lib/data/destinations';
 
 const SITE_URL = 'https://rentoramobility.in';
@@ -39,7 +40,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const blogRoutes = BLOG_POSTS.map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: new Date(post.publishedAt),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }));

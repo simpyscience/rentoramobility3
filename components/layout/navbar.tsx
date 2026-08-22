@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Phone, MessageCircle, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
@@ -14,116 +14,57 @@ import { Logo } from '@/components/layout/logo';
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/fleet', label: 'Fleet' },
-  {
-    href: '/services',
-    label: 'Services',
-    children: [
-      { href: '/services/airport-transfers', label: 'Airport Transfers' },
-      { href: '/services/corporate-rentals', label: 'Corporate Rentals' },
-      { href: '/services/luxury-rentals', label: 'Luxury Rentals' },
-      { href: '/services/outstation-trips', label: 'Outstation Trips' },
-      { href: '/services/wedding-cars', label: 'Wedding Cars' },
-      { href: '/services/self-drive', label: 'Self Drive' },
-    ],
-  },
   { href: '/destinations', label: 'Destinations' },
-  { href: '/about', label: 'About' },
-  { href: '/team', label: 'Team' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/#chauffeurs', label: 'Chauffeurs' },
+  { href: '/about', label: 'About Us' },
+  { href: '/contact', label: 'Contact Us' },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
-  const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [servicesOpen, setServicesOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   React.useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => {
+    const base = href.split('#')[0] || '/';
+    return base === '/' ? pathname === '/' : pathname.startsWith(base);
+  };
 
   return (
     <>
+      {/* Single, coherent Rentora Mobility header. This is the only navigation bar
+          in the app — it renders once in the global layout over the homepage hero
+          (and every other page). The supplied Innova homepage composition is the
+          visual source of truth; this white header board sits above it so there is
+          exactly one navbar, one logo and one set of navigation links. */}
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-all duration-500',
-          scrolled
-            ? 'bg-[hsl(222,47%,9%)]/95 backdrop-blur-xl shadow-luxury py-3'
-            : 'bg-transparent py-4'
-        )}
+        className="fixed inset-x-0 top-0 z-50 border-b border-border bg-white/95 backdrop-blur-xl shadow-sm"
       >
-        {/* Top scrim: keeps the light logo + nav links readable over both dark
-            heroes and light inner pages while the navbar stays transparent (so it
-            never hides page content). Replaced by the solid bar once scrolled. */}
-        {!scrolled && (
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/55 to-transparent"
-          />
-        )}
-        <nav className="container-lux flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <nav className="container-lux flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3">
           <Logo />
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-1">
             {NAV_LINKS.map((link) => (
-              <div
+              <Link
                 key={link.href}
-                className="relative"
-                onMouseEnter={() => link.children && setServicesOpen(true)}
-                onMouseLeave={() => link.children && setServicesOpen(false)}
-              >
-                <Link
-                  href={link.href}
-                  className={cn(
-                    'flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-                    isActive(link.href)
-                      ? 'text-gold'
-                      : 'text-white/75 hover:text-gold'
-                  )}
-                >
-                  {link.label}
-                  {link.children && <ChevronDown className="h-3.5 w-3.5" />}
-                </Link>
-                {link.children && (
-                  <AnimatePresence>
-                    {servicesOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute left-0 top-full pt-2 w-56"
-                      >
-                        <div className="glass rounded-xl p-2 shadow-luxury">
-                          {link.children.map((child) => (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              className="block rounded-lg px-3 py-2 text-sm text-foreground/80 hover:bg-gold/10 hover:text-gold transition-colors"
-                            >
-                              {child.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                href={link.href}
+                className={cn(
+                  'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                  isActive(link.href)
+                    ? 'text-gold'
+                    : 'text-foreground/75 hover:text-gold'
                 )}
-              </div>
+              >
+                {link.label}
+              </Link>
             ))}
           </div>
 
@@ -131,7 +72,7 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             <a
               href={telLink()}
-              className="hidden xl:flex items-center gap-2 rounded-full border border-white/20 px-3 py-2 text-sm font-medium text-white/80 hover:border-gold/50 hover:text-gold transition-colors"
+              className="hidden xl:flex items-center gap-2 rounded-full border border-border px-3 py-2 text-sm font-medium text-foreground/80 hover:border-gold/50 hover:text-gold transition-colors"
             >
               <Phone className="h-4 w-4" />
               {CONTACT.phoneDisplay}
@@ -187,30 +128,16 @@ export function Navbar() {
               </div>
               <div className="flex flex-col gap-1">
                 {NAV_LINKS.map((link) => (
-                  <div key={link.href}>
-                    <Link
-                      href={link.href}
-                      className={cn(
-                        'block rounded-lg px-4 py-3 text-base font-medium transition-colors',
-                        isActive(link.href) ? 'bg-gold/10 text-gold' : 'hover:bg-muted'
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                    {link.children && (
-                      <div className="ml-4 border-l border-border pl-2 my-1">
-                        {link.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            className="block rounded-lg px-4 py-2 text-sm text-muted-foreground hover:text-gold transition-colors"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      'block rounded-lg px-4 py-3 text-base font-medium transition-colors',
+                      isActive(link.href) ? 'bg-gold/10 text-gold' : 'hover:bg-muted'
                     )}
-                  </div>
+                  >
+                    {link.label}
+                  </Link>
                 ))}
               </div>
               <div className="mt-6 flex flex-col gap-3">

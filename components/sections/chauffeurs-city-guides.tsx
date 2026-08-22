@@ -12,7 +12,7 @@ export function ChauffeursCityGuides() {
   const images = getAllChauffeurImages();
 
   return (
-    <section className="section-pad bg-card/30">
+      <section id="chauffeurs" className="section-pad bg-card/30">
       <div className="container-lux">
         <SectionHeading
           eyebrow="Professional Service"

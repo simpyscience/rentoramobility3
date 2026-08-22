@@ -144,7 +144,7 @@ export const FAQS: FAQ[] = [
   },
   {
     q: 'What is your cancellation policy?',
-    a: 'Free cancellation up to 24 hours before your pickup time. Cancellations within 24 hours incur a 25% fee. No-shows are charged at 50% of the booking amount. Refunds are processed within 5-7 business days.',
+    a: 'Cancellation charges are based on how close you cancel to your pickup time: more than 48 hours before pickup — no deduction (0%); 24–48 hours before — 3%; 4–24 hours before — 50%; within 0–4 hours — 100%; and a no-show — 100%.',
   },
   {
     q: 'Are there any hidden charges?',
@@ -263,83 +263,4 @@ export const WHY_CHOOSE_US = [
   { icon: 'Headset', title: 'Voice AI Assistant', text: 'Our AI assistant helps you choose, book and plan — in English and Hindi, 24/7.' },
 ];
 
-export interface BlogPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  date: string;
-  author: string;
-  image: string;
-  category: string;
-  readTime: string;
-}
 
-export const BLOG_POSTS: BlogPost[] = [
-  {
-    slug: 'innova-crysta-vs-hycross',
-    title: 'Innova Crysta vs Hycross: Which One Should You Rent?',
-    excerpt: 'A detailed comparison of the Toyota Innova Crysta and Innova Hycross to help you choose the right MPV for your journey.',
-    date: '2025-08-10',
-    author: 'Rentora Editorial',
-    image: 'https://images.pexels.com/photos/18581043/pexels-photo-18581043.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Car Guides',
-    readTime: '6 min',
-    content: 'The Toyota Innova has been the backbone of Indian family and group travel for nearly two decades. With the launch of the Innova Hycross alongside the trusted Crysta, renters now have a choice. The Crysta is a diesel-powered, proven workhorse with legendary reliability and ride comfort on long highway journeys. The Hycross is a strong hybrid with SUV-inspired styling, ADAS safety features, a panoramic sunroof and ventilated seats — it feels more premium and modern. For long outstation trips with heavy luggage, the Crysta remains an excellent choice. For city use, corporate travel and those who want the latest tech, the Hycross is the way to go. Both seat 7 comfortably and are available with professional chauffeurs from Rentora Mobility.',
-  },
-  {
-    slug: 'best-road-trips-from-delhi',
-    title: '7 Best Road Trips From Delhi in 2025',
-    excerpt: 'Discover the most scenic and exciting road trips you can take from Delhi with the perfect rental car.',
-    date: '2025-07-28',
-    author: 'Rentora Editorial',
-    image: 'https://images.pexels.com/photos/1558070/pexels-photo-1558070.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Travel',
-    readTime: '8 min',
-    content: 'Delhi is the perfect launchpad for incredible road trips. From the royal Pink City of Jaipur (280 km) to the Taj Mahal in Agra (230 km), the Himalayan foothills of Mussoorie and the spiritual city of Rishikesh — each route offers something unique. For mountain trips, an SUV like the Toyota Fortuner or Mahindra Scorpio N is ideal. For family trips to Rajasthan, the Innova Crysta or Hycross offers unmatched comfort. Always plan your stops, carry essentials, and book a reliable rental with an experienced highway driver for the best experience.',
-  },
-  {
-    slug: 'corporate-car-rental-guide',
-    title: 'The Complete Guide to Corporate Car Rentals in India',
-    excerpt: 'Everything businesses need to know about corporate car rentals, subscriptions and executive transport.',
-    date: '2025-07-15',
-    author: 'Rentora Editorial',
-    image: 'https://images.pexels.com/photos/380769/pexels-photo-380769.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Corporate',
-    readTime: '7 min',
-    content: 'Corporate car rentals offer businesses flexibility without the overhead of owning a fleet. With monthly subscriptions, dedicated account managers, GST invoicing and a range of executive sedans and SUVs, companies can transport executives, clients and teams efficiently. Look for providers with verified chauffeurs, transparent billing and pan-India coverage. Rentora Mobility offers tailored corporate packages starting at competitive rates.',
-  },
-  {
-    slug: 'luxury-wedding-cars',
-    title: 'Choosing the Perfect Luxury Wedding Car',
-    excerpt: 'Make your wedding day unforgettable with the right luxury car — from Mercedes to BMW and decorated classics.',
-    date: '2025-06-30',
-    author: 'Rentora Editorial',
-    image: 'https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Weddings',
-    readTime: '5 min',
-    content: 'Your wedding day deserves a grand entrance. Luxury sedans like the Mercedes E Class and BMW 5 Series make a timeless statement, while the BMW 7 Series offers ultimate opulence. For the baraat, a decorated SUV like the Fortuner adds energy and presence. Always book in advance, request floral decoration, and ensure the chauffeur is in formal attire. Rentora Mobility offers curated wedding car packages across India.',
-  },
-  {
-    slug: 'self-drive-tips-india',
-    title: '10 Essential Self-Drive Tips for Indian Roads',
-    excerpt: 'Stay safe and enjoy your self-drive rental with these essential tips for driving in India.',
-    date: '2025-06-18',
-    author: 'Rentora Editorial',
-    image: 'https://images.pexels.com/photos/9462297/pexels-photo-9462297.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Guides',
-    readTime: '6 min',
-    content: 'Self-drive rentals give you freedom, but Indian roads require preparation. Always carry your licence and ID, obey speed limits, use seatbelts, avoid night driving on unfamiliar highways, and keep emergency contacts handy. Inspect the car before driving off, note existing damage, and understand the insurance coverage. With Rentora Mobility, every self-drive car is fully insured and well-maintained for your peace of mind.',
-  },
-  {
-    slug: 'airport-transfer-benefits',
-    title: 'Why Pre-Booking Airport Transfers is a Game-Changer',
-    excerpt: 'Skip the taxi queues and travel stress-free with pre-booked airport transfers.',
-    date: '2025-06-05',
-    author: 'Rentora Editorial',
-    image: 'https://images.pexels.com/photos/2026324/pexels-photo-2026324.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    category: 'Travel',
-    readTime: '4 min',
-    content: 'Pre-booking an airport transfer eliminates the stress of finding a taxi after a long flight. Your chauffeur tracks your flight, waits at arrivals with a placard, assists with luggage and takes you directly to your destination in a clean, comfortable vehicle. With fixed transparent pricing, there are no surprises. Rentora Mobility offers airport transfers at all major Indian airports, 24/7.',
-  },
-];
