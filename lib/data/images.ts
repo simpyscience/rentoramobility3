@@ -158,6 +158,21 @@ const DESTINATION_CITY_TOKENS: Record<string, string[]> = {
   'gurugram': ['gurugram'],
   'manali': ['manali'],
   'arunachal-pradesh': ['arunachal', 'bomdila'],
+  // Additional single-city destinations discovered from real supplied folders.
+  ajmer: ['ajmer'],
+  alwar: ['alwar'],
+  amritsar: ['amritsar'],
+  chandigarh: ['chandigarh'],
+  faridabad: ['faridabad'],
+  haridwar: ['haridwar'],
+  kurukshetra: ['kurukshetra'],
+  ludhiana: ['ludhiana'],
+  masoorie: ['masoorie', 'mussoorie'],
+  nanital: ['nanital', 'nainital'],
+  noida: ['noida'],
+  palwal: ['palwal'],
+  rishikesh: ['rishikesh'],
+  shimla: ['shimla'],
 };
 
 /* ------------------------------------------------------------------ */
