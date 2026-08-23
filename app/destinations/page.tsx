@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, MapPin, Calendar } from 'lucide-react';
+import { ArrowRight, MapPin, Calendar, Camera } from 'lucide-react';
 import { DESTINATIONS } from '@/lib/data/destinations';
 import { Badge } from '@/components/ui/badge';
 
@@ -32,11 +32,19 @@ export default function DestinationsPage() {
               <div className="relative aspect-[16/10] overflow-hidden">
                 <img src={destination.heroImage} alt={destination.cityName} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute top-4 left-4">
-                  <Badge className="bg-gold/90 text-[hsl(var(--gold-foreground))] border-0 text-[10px] font-semibold uppercase tracking-wider">
-                    {destination.state}
-                  </Badge>
-                </div>
+               <div className="absolute top-4 left-4">
+                   <Badge className="bg-gold/90 text-[hsl(var(--gold-foreground))] border-0 text-[10px] font-semibold uppercase tracking-wider">
+                     {destination.state}
+                   </Badge>
+                 </div>
+                 {destination.gallery.length > 0 && (
+                   <div className="absolute top-4 right-4">
+                     <Badge className="bg-white/10 text-white border border-white/20 backdrop-blur text-[10px] font-semibold">
+                       <Camera className="h-3 w-3 mr-1" />
+                       {destination.gallery.length} photos
+                     </Badge>
+                   </div>
+                 )}
                 <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
                   <h2 className="font-display text-2xl font-semibold">{destination.cityName}</h2>
                   <p className="mt-1 text-xs text-white/70 line-clamp-2">{destination.shortDescription}</p>

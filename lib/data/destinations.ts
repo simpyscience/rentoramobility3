@@ -1,5 +1,6 @@
 import { CARS } from '@/lib/data/cars';
 import { getDestinationAssetPath } from '@/lib/data/images';
+import { getDestinationImages } from '@/lib/data/destination-images';
 
 export interface DestinationTravelInfo {
   city: string;
@@ -32,7 +33,7 @@ export interface Destination {
 
 const DESTINATION_ASSET = (slug: string) => getDestinationAssetPath(slug);
 
-export const DESTINATIONS: Destination[] = [
+const DESTINATION_RECORDS: Destination[] = [
   {
     slug: 'delhi-jaipur',
     name: 'Jaipur',
@@ -500,6 +501,19 @@ export const DESTINATIONS: Destination[] = [
     recommendedCarSlugs: ['mahindra-xuv700', 'toyota-fortuner', 'tata-safari'],
   },
 ];
+
+/**
+ * Normalise each destination's gallery to the real photographs auto-discovered
+ * from its own folder (public/images/destinations/<folder>/). Destinations
+ * without a folder (e.g. Pune, Goa) get an empty gallery and never fall back to
+ * another city's photograph. The hero is excluded so it isn't rendered twice;
+ * it already resolves to a real folder photograph via getDestinationAssetPath.
+ */
+export const DESTINATIONS: Destination[] = DESTINATION_RECORDS.map((destination) => {
+  const images = getDestinationImages(destination.slug);
+  const gallery = images.filter((img) => img !== destination.heroImage);
+  return { ...destination, gallery };
+});
 
 export function getDestinationBySlug(slug: string): Destination | undefined {
   return DESTINATIONS.find((destination) => destination.slug === slug);

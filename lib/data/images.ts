@@ -53,6 +53,7 @@ export const LOCAL_CAR_IMAGES: string[] = [
  * DESTINATION_CITY_TOKENS so a destination never shows the wrong city.
  */
 import { LOCAL_DESTINATION_IMAGES } from './destination-images.generated';
+import { getDestinationImages } from '@/lib/data/destination-images';
 
 /**
  * Generic, unidentifiable supplied photographs (the original "download (6)-images-*"
@@ -121,39 +122,24 @@ export const CAR_IMAGE_MAP: Record<string, string> = {
 };
 
 /**
- * Maps destination slugs to real local destination images.
- * Only add entries here when the image has been confidently identified.
- * Currently empty — all local destination JPGs have generic filenames
- * and cannot be confidently identified without visual inspection.
- */
-/**
- * Confidently identified real local destination photographs. Each image's
- * filename clearly names the city it depicts, so it is mapped ONLY to the
- * matching destination/route — a city never shows another city's image.
+ * Explicit slug → confidently-identified real local destination photograph.
+ *
+ * Folder-based discovery (see `getDestinationImages` / `DESTINATION_FOLDER_IMAGES`)
+ * is now the PRIMARY source and already returns a correct, city-confirmed image
+ * for every destination that has a folder. This map is kept for future
+ * overrides: only add an entry here if you want to force a specific image to be
+ * the hero for a route ahead of the auto-discovered one. Do NOT add broken
+ * flat-file paths (photos now live in `public/images/destinations/<folder>/`).
  */
 export const DESTINATION_IMAGE_MAP: Record<string, string> = {
-  'delhi-jaipur': '/images/destinations/jaipur-rajasthan.jpg',
-  'delhi-agra': '/images/destinations/agra.jpg',
-  'delhi-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
-  'jaipur-udaipur': '/images/destinations/udaipur-city-of-lakes.jpg',
-  'delhi': '/images/destinations/delhi.jpg',
-  'mumbai': '/images/destinations/mumbai.jpg',
-  'varanasi': '/images/destinations/varanashi.jpg',
-  'jodhpur': '/images/destinations/jodhpur.jpg',
-  'jaisalmer': '/images/destinations/jaisalmer.jpg',
-  'kedarnath': '/images/destinations/kedarnath.jpg',
-  'jammu-kashmir': '/images/destinations/jammu and kashmir.jpg',
-  'gurugram': '/images/destinations/gurugram.jpg',
-  'manali': '/images/destinations/Manali.jfif',
-  'arunachal-pradesh': '/images/destinations/arunachal pradesh  bomdila.jpg',
+  // Intentionally empty — all destination photographs are auto-discovered
+  // from their city folders at build time (see destination-images.ts).
 };
 
 /**
- * City-name tokens used to discover a correctly-matching supplied image for a
- * route/destination by scanning LOCAL_DESTINATION_IMAGES. This keeps mapping
- * robust to the exact supplied filename (e.g. jaipur.jpg, jaipur.jfif and
- * jaipur-rajasthan.jpg all resolve to the Jaipur routes; agra.jpg / aagra.jpg
- * both resolve to the Agra route).
+ * City-name tokens used to pick the most representative primary image from a
+ * destination's discovered folder photographs (e.g. jaipur.jpg over a generic
+ * "download (5).jfif"). Discovery is robust to the exact supplied filename.
  */
 const DESTINATION_CITY_TOKENS: Record<string, string[]> = {
   'delhi-jaipur': ['jaipur'],
@@ -275,40 +261,44 @@ export function getCarAssetPath(
 }
 
 /**
- * Get the best available image for a destination.
- * Priority: explicit mapping → real local photo (display) → destination SVG.
+ * Get the best available image for a destination (hero / primary display).
  *
- * Per client direction (Option C): real local photographs are used as display
- * images even when the exact city cannot be verified from the generic filename.
+ * Priority:
+ *   1. Auto-discovered real photograph from the destination's OWN folder
+ *      (public/images/destinations/<folder>/) — city-confirmed, picked via
+ *      city-name token matching when possible, else the first sorted photo.
+ *      This is the PRIMARY source; a destination never shows another city's
+ *      image because it only ever reads its own folder.
+ *   2. Explicit override mapping (DESTINATION_IMAGE_MAP) — future use only.
+ *   3. Generic supplied photograph pool — only for routes with no folder
+ *      (e.g. Pune, Goa); never another city's identifiable photo.
+ *   4. Destination SVG illustration (route fallback).
+ *
  * Destination identity/data is never changed — the image asset is independent.
  */
 export function getDestinationAssetPath(slug: string): string {
-  // 1. Filename-token discovery across the supplied image pool. This is the
-  //    primary mechanism and is robust to the EXACT supplied filename: e.g.
-  //    jaipur.jpg / jaipur.jfif / jaipur-rajasthan.jpg all resolve to the
-  //    Jaipur routes, and agra.jpg / agra (2).jpg / agra taj-e-mehal.jpg all
-  //    resolve to the Agra route. Because LOCAL_DESTINATION_IMAGES is generated
-  //    from the live folder at build time, the match is always an existing file.
-  //    A city never resolves to another city's image because the tokens are the
-  //    destination city names themselves.
-  const tokens = DESTINATION_CITY_TOKENS[slug];
-  if (tokens && LOCAL_DESTINATION_IMAGES.length > 0) {
-    const match = LOCAL_DESTINATION_IMAGES.find((p) => {
-      const base = p.toLowerCase().split('/').pop()!.replace(/\.[^.]+$/, '');
-      return tokens.some((t) => base.includes(t));
-    });
-    if (match) return match;
+  // 1. PRIMARY — real photographs auto-discovered from the destination's folder.
+  const folderImages = getDestinationImages(slug);
+  if (folderImages.length > 0) {
+    const tokens = DESTINATION_CITY_TOKENS[slug];
+    if (tokens && tokens.length > 0) {
+      const confident = folderImages.find((p) => {
+        const base = p.toLowerCase().split('/').pop()!.replace(/\.[^.]+$/, '');
+        return tokens.some((t) => base.includes(t));
+      });
+      if (confident) return confident;
+    }
+    return folderImages[0];
   }
 
-  // 2. Explicit confidently-identified mapping (filename clearly names the city).
+  // 2. Explicit confidently-identified override mapping (future use).
   const mappedImage = DESTINATION_IMAGE_MAP[slug];
   if (mappedImage) return mappedImage;
 
-  // 3. Generic, unidentifiable supplied photograph. Used for routes that have no
-  //    supplied photo clearly depicting their destination city (e.g. Pune, Goa).
-  //    Restricted to the generic pool so a card never shows ANOTHER city's
-  //    identifiable image ("never map a wrong city"), while still rendering a
-  //    real local supplied image rather than a missing/broken path.
+  // 3. Generic, unidentifiable supplied photograph. Used only for routes with no
+  //    folder (e.g. Pune, Goa). Restricted to the generic pool so a card never
+  //    shows ANOTHER city's identifiable image ("never map a wrong city"), while
+  //    still rendering a real local supplied image rather than a broken path.
   if (DESTINATION_GENERIC_POOL.length > 0) {
     const index = hashString(slug) % DESTINATION_GENERIC_POOL.length;
     return DESTINATION_GENERIC_POOL[index];

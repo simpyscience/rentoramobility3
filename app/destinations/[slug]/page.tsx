@@ -46,7 +46,11 @@ export default function DestinationDetailPage({ params }: PageProps) {
   };
 
   const recommendedCars = getDestinationRecommendedCars(destination);
-  const gallery = destination.gallery.length > 1 ? destination.gallery : [destination.heroImage];
+  // Combine the hero and the auto-discovered folder gallery, de-duplicated, so
+  // every real supplied photograph is shown (no broken flat-file placeholders).
+  const gallery = [destination.heroImage, ...destination.gallery].filter(
+    (img, idx, arr) => arr.indexOf(img) === idx
+  );
   const routeOrigin =
     destination.travelInfo.find((t) => t.city !== destination.cityName)?.city ||
     destination.travelInfo[0]?.city ||
