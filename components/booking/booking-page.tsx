@@ -57,7 +57,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
   const [couponError, setCouponError] = React.useState('');
 
   const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [availability, setAvailability] = React.useState<{ available: boolean; message: string } | null>(null);
+  const [availability, setAvailability] = React.useState<{ available: boolean; status: string; message: string } | null>(null);
   const [checkingAvailability, setCheckingAvailability] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
@@ -118,7 +118,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
     return Object.keys(errs).length === 0;
   };
 
-  const checkAvailability = async (): Promise<{ available: boolean; message: string } | null> => {
+  const checkAvailability = async (): Promise<{ available: boolean; status: string; message: string } | null> => {
     if (!car || !pickupDate || !dropDate) return null;
     setCheckingAvailability(true);
     setAvailability(null);
@@ -138,12 +138,12 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
       const data = await res.json();
       const result =
         data.success
-          ? { available: data.available, message: data.message }
-          : { available: false, message: data.error || 'Unable to check availability.' };
+          ? { available: data.available, status: data.availability || (data.available ? 'Available' : 'Unavailable'), message: data.message }
+          : { available: false, status: 'Unavailable', message: data.error || 'Unable to check availability.' };
       setAvailability(result);
       return result;
     } catch {
-      const result = { available: false, message: 'Network error. Please try again.' };
+      const result = { available: false, status: 'Unavailable', message: 'Network error. Please try again.' };
       setAvailability(result);
       return result;
     } finally {
@@ -443,10 +443,10 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
 
               {/* Availability Status */}
               {availability && !checkingAvailability && (
-                <div className={cn('mb-6 rounded-xl border p-4 text-sm flex items-start gap-3', availability.available ? 'border-green-500/30 bg-green-500/10 text-green-700' : 'border-red-500/30 bg-red-500/10 text-red-700')}>
+                <div className={cn('mb-6 rounded-xl border p-4 text-sm flex items-start gap-3', availability.available ? (availability.status === 'Limited availability' ? 'border-amber-500/30 bg-amber-500/10 text-amber-700' : 'border-green-500/30 bg-green-500/10 text-green-700') : 'border-red-500/30 bg-red-500/10 text-red-700')}>
                   {availability.available ? <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" /> : <X className="h-5 w-5 shrink-0 mt-0.5" />}
                   <div>
-                    <p className="font-semibold mb-0.5">{availability.available ? 'Available' : 'Unavailable'}</p>
+                    <p className="font-semibold mb-0.5">{availability.status}</p>
                     <p className="text-xs opacity-90">{availability.message}</p>
                   </div>
                 </div>

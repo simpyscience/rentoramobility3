@@ -25,7 +25,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     const { data, error } = await supabaseAdmin
       .from('bookings')
-      .update({ status, updated_at: new Date().toISOString() })
+      .update({ status })
       .eq('id', params.id)
       .select()
       .single();
