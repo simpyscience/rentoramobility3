@@ -7,7 +7,7 @@ import { Search, MapPin, Calendar, Clock, ArrowRight, CheckCircle2, Phone, Messa
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CarCard } from '@/components/fleet/car-card';
-import { CITIES, COUPONS } from '@/lib/data/site';
+import { CITIES } from '@/lib/data/site';
 import { CONTACT, whatsappLink } from '@/lib/data/contact';
 import { getCarBySlug, getRelatedCars, type Car } from '@/lib/data/cars';
 import { cn } from '@/lib/utils';
@@ -52,10 +52,6 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
   const [phone, setPhone] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [specialRequirements, setSpecialRequirements] = React.useState('');
-  const [couponCode, setCouponCode] = React.useState('');
-  const [appliedCoupon, setAppliedCoupon] = React.useState<{ code: string; discount: number; maxDiscount: number; label: string } | null>(null);
-  const [couponError, setCouponError] = React.useState('');
-
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [availability, setAvailability] = React.useState<{ available: boolean; status: string; message: string } | null>(null);
   const [checkingAvailability, setCheckingAvailability] = React.useState(false);
@@ -89,9 +85,8 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
   const basePrice = car.pricePerDay * days;
   const chauffeurPrice = serviceType === 'chauffeur' ? 500 * days : 0;
   const subtotal = basePrice + chauffeurPrice;
-  const discount = appliedCoupon ? Math.min((subtotal * appliedCoupon.discount) / 100, appliedCoupon.maxDiscount) : 0;
-  const gst = (subtotal - discount) * 0.05;
-  const total = subtotal - discount + gst;
+  const gst = subtotal * 0.05;
+  const total = subtotal + gst;
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -191,17 +186,6 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
       setSubmitError('Network error. Please try again.');
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const applyCoupon = () => {
-    const coupon = COUPONS.find((c) => c.code === couponCode.toUpperCase());
-    if (coupon) {
-      setAppliedCoupon(coupon);
-      setCouponError('');
-    } else {
-      setCouponError('Invalid coupon code');
-      setAppliedCoupon(null);
     }
   };
 
@@ -410,26 +394,6 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                 <textarea id="specialRequirements" value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} rows={3} className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-gold transition-colors resize-none" placeholder="Any special requests..." />
               </div>
 
-              {/* Coupon */}
-              <div className="mb-8">
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input value={couponCode} onChange={(e) => setCouponCode(e.target.value)} placeholder="Coupon code" className="w-full rounded-lg border border-border bg-background pl-9 pr-3 py-2.5 text-sm focus:border-gold outline-none transition-colors" />
-                  </div>
-                  <Button type="button" onClick={applyCoupon} variant="outline" size="sm" className="rounded-lg">Apply</Button>
-                </div>
-                {couponError && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{couponError}</p>}
-                {appliedCoupon && <p className="text-xs text-green-600 mt-1.5 flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {appliedCoupon.label}</p>}
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {COUPONS.slice(0, 3).map((c) => (
-                    <button key={c.code} type="button" onClick={() => { setCouponCode(c.code); setAppliedCoupon(c); setCouponError(''); }} className="text-[10px] rounded-full border border-dashed border-gold/40 px-2 py-0.5 text-gold hover:bg-gold/5 transition-colors">
-                      {c.code}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Submit Error */}
               {submitError && (
                 <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 flex items-start gap-3">
@@ -526,12 +490,6 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">Chauffeur charges</span>
                       <span className="font-semibold">₹{chauffeurPrice.toLocaleString('en-IN')}</span>
-                    </div>
-                  )}
-                  {discount > 0 && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Discount</span>
-                      <span className="font-semibold text-green-600">-₹{discount.toFixed(0)}</span>
                     </div>
                   )}
                   <div className="border-t border-border pt-3 mt-3">

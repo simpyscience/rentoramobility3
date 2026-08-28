@@ -238,13 +238,6 @@ export const SERVICES: ServicePage[] = [
   },
 ];
 
-export const COUPONS = [
-  { code: 'FIRST10', discount: 10, label: '10% off your first booking', maxDiscount: 1000 },
-  { code: 'RENTORA20', discount: 20, label: '20% off on luxury cars', maxDiscount: 5000 },
-  { code: 'CORP15', discount: 15, label: '15% off corporate bookings', maxDiscount: 3000 },
-  { code: 'WEEKEND5', discount: 5, label: '5% weekend special', maxDiscount: 500 },
-];
-
 export const TRUST_BADGES = [
   '100% Verified Cars',
   'Professional Chauffeurs',

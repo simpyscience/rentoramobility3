@@ -6,7 +6,6 @@ import { Calendar, Clock, MapPin, Tag, CheckCircle2, Phone, MessageCircle, Arrow
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CITIES } from '@/lib/data/site';
-import { COUPONS } from '@/lib/data/site';
 import { CONTACT, whatsappLink } from '@/lib/data/contact';
 import type { Car } from '@/lib/data/cars';
 import { cn } from '@/lib/utils';
@@ -21,9 +20,6 @@ export function BookingCalculator({ car }: { car: Car }) {
   const [pickupTime, setPickupTime] = React.useState('10:00');
   const [dropTime, setDropTime] = React.useState('10:00');
   const [chauffeur, setChauffeur] = React.useState(!car.selfDrive);
-  const [couponCode, setCouponCode] = React.useState('');
-  const [appliedCoupon, setAppliedCoupon] = React.useState<{ code: string; discount: number; maxDiscount: number; label: string } | null>(null);
-  const [couponError, setCouponError] = React.useState('');
   const [confirmed, setConfirmed] = React.useState(false);
 
   const today = new Date().toISOString().split('T')[0];
@@ -39,20 +35,8 @@ export function BookingCalculator({ car }: { car: Car }) {
   const basePrice = car.pricePerDay * days;
   const chauffeurPrice = chauffeur ? 500 * days : 0;
   const subtotal = basePrice + chauffeurPrice;
-  const discount = appliedCoupon ? Math.min((subtotal * appliedCoupon.discount) / 100, appliedCoupon.maxDiscount) : 0;
-  const gst = (subtotal - discount) * 0.05;
-  const total = subtotal - discount + gst;
-
-  const applyCoupon = () => {
-    const coupon = COUPONS.find((c) => c.code === couponCode.toUpperCase());
-    if (coupon) {
-      setAppliedCoupon(coupon);
-      setCouponError('');
-    } else {
-      setCouponError('Invalid coupon code');
-      setAppliedCoupon(null);
-    }
-  };
+  const gst = subtotal * 0.05;
+  const total = subtotal + gst;
 
   const handleBook = () => {
     setConfirmed(true);
@@ -83,7 +67,6 @@ Total: ₹${total.toFixed(0)}`;
           <Row label="Return" value={`${dropCity} · ${dropDate} · ${dropTime}`} />
           <Row label="Duration" value={`${days} day${days > 1 ? 's' : ''}`} />
           <Row label="Chauffeur" value={chauffeur ? 'Yes' : 'No (Self Drive)'} />
-          {appliedCoupon && <Row label="Coupon" value={appliedCoupon.code} />}
           <div className="border-t border-border pt-2 mt-2">
             <Row label="Total" value={`₹${total.toFixed(0)}`} bold />
           </div>
@@ -144,35 +127,9 @@ Total: ₹${total.toFixed(0)}`;
         <div className="rounded-xl bg-muted/40 p-4 space-y-2 text-sm">
           <Row label={`₹${car.pricePerDay.toLocaleString('en-IN')} × ${days} day${days > 1 ? 's' : ''}`} value={`₹${basePrice.toLocaleString('en-IN')}`} />
           {chauffeur && <Row label="Chauffeur charges" value={`₹${chauffeurPrice.toLocaleString('en-IN')}`} />}
-          {discount > 0 && <Row label="Discount" value={`-₹${discount.toFixed(0)}`} green />}
           <Row label="GST (5%)" value={`₹${gst.toFixed(0)}`} />
           <div className="border-t border-border pt-2 mt-2">
             <Row label="Total" value={`₹${total.toFixed(0)}`} bold />
-          </div>
-        </div>
-
-        {/* Coupon */}
-        <div>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                placeholder="Coupon code"
-                className="w-full rounded-lg border border-border bg-background pl-9 pr-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors"
-              />
-            </div>
-            <Button onClick={applyCoupon} variant="outline" size="sm" className="rounded-lg">Apply</Button>
-          </div>
-          {couponError && <p className="text-xs text-red-500 mt-1">{couponError}</p>}
-          {appliedCoupon && <p className="text-xs text-green-600 mt-1 flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {appliedCoupon.label}</p>}
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {COUPONS.slice(0, 3).map((c) => (
-              <button key={c.code} onClick={() => { setCouponCode(c.code); setAppliedCoupon(c); setCouponError(''); }} className="text-[10px] rounded-full border border-dashed border-gold/40 px-2 py-0.5 text-gold hover:bg-gold/5 transition-colors">
-                {c.code}
-              </button>
-            ))}
           </div>
         </div>
 
