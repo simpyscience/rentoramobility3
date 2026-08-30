@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CarCard } from '@/components/fleet/car-card';
 import { SectionHeading } from '@/components/ui/section-heading';
-import { BookingCalculator } from '@/components/booking/booking-calculator';
 import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
 import { getRelatedCars, type Car } from '@/lib/data/cars';
 import { DESTINATIONS, type Destination, type DestinationTravelInfo } from '@/lib/data/destinations';
@@ -166,7 +165,35 @@ export function CarDetailPage({ car }: { car: Car }) {
 
           {/* Booking */}
           <div id="booking-section" className="lg:sticky lg:top-28 h-fit space-y-6">
-            <BookingCalculator car={car} />
+            <div className="luxury-card p-6">
+              <h3 className="font-display text-xl font-bold mb-1">Book {car.name}</h3>
+              <p className="text-sm text-muted-foreground mb-5">Complete your reservation with full details</p>
+
+              <div className="rounded-xl bg-muted/40 p-4 space-y-2 text-sm mb-5">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Base rate</span>
+                  <span className="font-semibold">₹{car.pricePerDay.toLocaleString('en-IN')}/day</span>
+                </div>
+                {car.pricePerHour && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Hourly rate</span>
+                    <span className="font-semibold">₹{car.pricePerHour.toLocaleString('en-IN')}/hr</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Seats</span>
+                  <span className="font-semibold">{car.specs.passengers} Seater</span>
+                </div>
+              </div>
+
+              <a href={`/book/${car.slug}`}>
+                <Button className="btn-gold w-full rounded-xl h-12 group">
+                  Book Now
+                  <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </a>
+              <p className="text-[11px] text-center text-muted-foreground mt-2">Full booking form · Instant confirmation</p>
+            </div>
 
             <div className="luxury-card p-6">
               <h3 className="font-semibold text-lg mb-4">Quick Contact</h3>
@@ -178,11 +205,11 @@ export function CarDetailPage({ car }: { car: Car }) {
                     <div className="text-sm font-semibold">{CONTACT.phoneDisplay}</div>
                   </div>
                 </a>
-                <a href={whatsappLink(`Hello, I'd like to book the ${car.name} (₹${car.pricePerDay}/day).`)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl bg-[#25D366]/10 p-3.5 hover:bg-[#25D366]/20 transition-colors">
+                <a href={whatsappLink(`Hello, I'd like to book the ${car.name}.`)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:border-gold/50 transition-colors">
                   <MessageCircle className="h-5 w-5 text-[#25D366]" />
                   <div>
                     <div className="text-xs text-muted-foreground">WhatsApp</div>
-                    <div className="text-sm font-semibold">{CONTACT.whatsappDisplay}</div>
+                    <div className="text-sm font-semibold">{CONTACT.phoneDisplay}</div>
                   </div>
                 </a>
               </div>
