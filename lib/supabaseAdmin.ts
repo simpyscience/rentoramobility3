@@ -16,6 +16,18 @@ if (!serviceRoleKey) {
   );
 }
 
+// Safe diagnostic: log key type without revealing value
+const keyType = serviceRoleKey.startsWith("sb_secret_")
+  ? "secret"
+  : serviceRoleKey.startsWith("sb_publishable_")
+  ? "publishable"
+  : "unknown";
+console.log(`[supabaseAdmin] URL: ${supabaseUrl}, Key type: ${keyType}, Key length: ${serviceRoleKey.length}`);
+
+if (keyType !== "secret") {
+  console.error("[supabaseAdmin] WARNING: SUPABASE_SERVICE_ROLE_KEY should be the Secret key (sb_secret_...), not Publishable key");
+}
+
 export const supabaseAdmin = createClient(
   supabaseUrl,
   serviceRoleKey,

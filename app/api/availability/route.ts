@@ -23,6 +23,9 @@ export async function POST(request: Request) {
 
   const { vehicle, pickup_datetime, return_datetime, city } = body;
 
+  // Diagnostic: log incoming request
+  console.log("[availability] Request:", { vehicle, pickup_datetime, return_datetime, city });
+
   if (!isNonEmptyString(vehicle)) {
     return NextResponse.json(
       { success: false, error: "Vehicle is required." },
@@ -63,11 +66,14 @@ export async function POST(request: Request) {
     .eq("name", (vehicle as string).trim())
     .eq("is_active", true);
 
-  if (isNonEmptyString(city)) {
-    carsQuery = carsQuery.eq("city", (city as string).trim());
-  }
-
   const { data: cars, error: carsError } = await carsQuery;
+
+  // Diagnostic: log query result
+  console.log("[availability] Cars query result:", {
+    carsFound: cars?.length || 0,
+    carsError: carsError ? { message: carsError.message, code: carsError.code } : null,
+    cars: cars?.map(c => ({ id: c.id, name: c.name, inventory_count: c.inventory_count }))
+  });
 
   if (carsError) {
     console.error("Availability API — cars lookup error:", carsError);
@@ -99,6 +105,12 @@ export async function POST(request: Request) {
     .in("status", ["pending", "confirmed"])
     .lt("pickup_datetime", returnDate.toISOString())
     .gt("return_datetime", pickupDate.toISOString());
+
+  // Diagnostic: log bookings result
+  console.log("[availability] Overlapping bookings:", {
+    count: overlapping?.length || 0,
+    bookingsError: bookingsError ? { message: bookingsError.message } : null
+  });
 
   if (bookingsError) {
     console.error("Availability API — bookings lookup error:", bookingsError);
