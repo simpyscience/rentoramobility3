@@ -43,6 +43,22 @@ const SERVICE_OPTIONS = [
   { value: 'self-drive', label: 'Self-drive' },
 ];
 
+const DATE_OPTIONS = [
+  { value: 'all', label: 'All Dates' },
+  { value: 'today', label: 'Today' },
+  { value: 'upcoming', label: 'Upcoming' },
+  { value: 'past', label: 'Past' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'oldest', label: 'Oldest First' },
+  { value: 'pickup_asc', label: 'Pickup Date (Earliest)' },
+  { value: 'pickup_desc', label: 'Pickup Date (Latest)' },
+  { value: 'price_desc', label: 'Price (High to Low)' },
+  { value: 'price_asc', label: 'Price (Low to High)' },
+];
+
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
   confirmed: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
@@ -109,6 +125,8 @@ export function AdminBookingManager({ initialBookings }: { initialBookings: Book
   const [searchInput, setSearchInput] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState('all');
   const [serviceFilter, setServiceFilter] = React.useState('all');
+  const [dateFilter, setDateFilter] = React.useState('all');
+  const [sortOption, setSortOption] = React.useState('newest');
   const [selectedBooking, setSelectedBooking] = React.useState<BookingRecord | null>(null);
   const [loadingStatus, setLoadingStatus] = React.useState<string | null>(null);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -203,11 +221,78 @@ export function AdminBookingManager({ initialBookings }: { initialBookings: Book
     setSearchQuery('');
     setStatusFilter('all');
     setServiceFilter('all');
+    setDateFilter('all');
+    setSortOption('newest');
   };
 
-  const hasActiveFilters = searchQuery !== '' || statusFilter !== 'all' || serviceFilter !== 'all';
+  const hasActiveFilters = searchQuery !== '' || statusFilter !== 'all' || serviceFilter !== 'all' || dateFilter !== 'all';
 
-  const filteredBookings = bookings;
+  // Compute statistics from ALL loaded bookings
+  const stats = React.useMemo(() => {
+    const total = bookings.length;
+    const pending = bookings.filter(b => b.status === 'pending').length;
+    const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+    const completed = bookings.filter(b => b.status === 'completed').length;
+    const cancelled = bookings.filter(b => b.status === 'cancelled').length;
+    const totalRevenue = bookings.reduce((sum, b) => sum + (parseFloat(b.total_price || '0') || 0), 0);
+    const confirmedRevenue = bookings.filter(b => b.status === 'confirmed' || b.status === 'completed').reduce((sum, b) => sum + (parseFloat(b.total_price || '0') || 0), 0);
+    return { total, pending, confirmed, completed, cancelled, totalRevenue, confirmedRevenue };
+  }, [bookings]);
+
+  // Upcoming bookings (confirmed/pending with future pickup)
+  const upcomingBookings = React.useMemo(() => {
+    const now = new Date();
+    return bookings
+      .filter(b => (b.status === 'confirmed' || b.status === 'pending') && b.pickup_datetime && new Date(b.pickup_datetime) >= now)
+      .sort((a, b) => new Date(a.pickup_datetime).getTime() - new Date(b.pickup_datetime).getTime())
+      .slice(0, 5);
+  }, [bookings]);
+
+  // Apply date filter
+  const applyDateFilter = React.useCallback((bookingList: BookingRecord[]) => {
+    if (dateFilter === 'all') return bookingList;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return bookingList.filter(b => {
+      if (!b.pickup_datetime) return false;
+      const pickup = new Date(b.pickup_datetime);
+      if (dateFilter === 'today') {
+        return pickup >= today && pickup < tomorrow;
+      }
+      if (dateFilter === 'upcoming') {
+        return pickup >= today;
+      }
+      if (dateFilter === 'past') {
+        return pickup < today;
+      }
+      return true;
+    });
+  }, [dateFilter]);
+
+  // Apply sorting
+  const applySorting = React.useCallback((bookingList: BookingRecord[]) => {
+    const sorted = [...bookingList];
+    switch (sortOption) {
+      case 'newest':
+        return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      case 'oldest':
+        return sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      case 'pickup_asc':
+        return sorted.sort((a, b) => new Date(a.pickup_datetime).getTime() - new Date(b.pickup_datetime).getTime());
+      case 'pickup_desc':
+        return sorted.sort((a, b) => new Date(b.pickup_datetime).getTime() - new Date(a.pickup_datetime).getTime());
+      case 'price_desc':
+        return sorted.sort((a, b) => (parseFloat(b.total_price || '0') || 0) - (parseFloat(a.total_price || '0') || 0));
+      case 'price_asc':
+        return sorted.sort((a, b) => (parseFloat(a.total_price || '0') || 0) - (parseFloat(b.total_price || '0') || 0));
+      default:
+        return sorted;
+    }
+  }, [sortOption]);
+
+  const filteredBookings = applySorting(applyDateFilter(bookings));
 
   return (
     <div className="min-h-screen pt-24 pb-20">
@@ -231,9 +316,63 @@ export function AdminBookingManager({ initialBookings }: { initialBookings: Book
               window.location.href = '/admin/bookings';
             }}>Sign Out</Button>
           </div>
-        </motion.div>
+         </motion.div>
 
-        {/* Search & Filters */}
+         {/* Dashboard Statistics */}
+         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+           <div className="luxury-card p-4">
+             <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total Bookings</div>
+             <div className="text-2xl font-bold">{stats.total}</div>
+           </div>
+           <div className="luxury-card p-4">
+             <div className="text-xs text-amber-600 uppercase tracking-wider mb-1">Pending</div>
+             <div className="text-2xl font-bold text-amber-600">{stats.pending}</div>
+           </div>
+           <div className="luxury-card p-4">
+             <div className="text-xs text-blue-600 uppercase tracking-wider mb-1">Confirmed</div>
+             <div className="text-2xl font-bold text-blue-600">{stats.confirmed}</div>
+           </div>
+           <div className="luxury-card p-4">
+             <div className="text-xs text-green-600 uppercase tracking-wider mb-1">Completed</div>
+             <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+           </div>
+           <div className="luxury-card p-4">
+             <div className="text-xs text-red-600 uppercase tracking-wider mb-1">Cancelled</div>
+             <div className="text-2xl font-bold text-red-600">{stats.cancelled}</div>
+           </div>
+           <div className="luxury-card p-4">
+             <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Revenue</div>
+             <div className="text-2xl font-bold text-gold">{formatPrice(String(stats.confirmedRevenue))}</div>
+           </div>
+          </div>
+
+          {/* Upcoming Bookings */}
+          {upcomingBookings.length > 0 && (
+            <div className="luxury-card p-4 md:p-6 mb-8">
+              <h3 className="font-display text-lg font-semibold mb-4">Upcoming Bookings</h3>
+              <div className="space-y-3">
+                {upcomingBookings.map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between gap-4 p-3 rounded-xl border border-border/70 hover:bg-muted/20 transition-colors cursor-pointer" onClick={() => setSelectedBooking(booking)}>
+                    <div className="flex items-center gap-3">
+                      <img src={getVehicleInfo(booking.vehicle).image} alt={booking.vehicle} className="h-10 w-14 rounded-lg object-cover" />
+                      <div>
+                        <div className="font-medium">{booking.customer_name}</div>
+                        <div className="text-xs text-muted-foreground">{booking.vehicle} • {booking.pickup_location}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-medium">{formatDate(booking.pickup_datetime)}</div>
+                      <Badge className={cn('border text-xs mt-1', STATUS_COLORS[booking.status] || '')}>
+                        {booking.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Search & Filters */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="luxury-card p-4 md:p-6 mb-8">
           <div className="grid gap-4 md:grid-cols-[2fr_1fr_1fr_auto] items-end gap-4">
             <div>
@@ -252,44 +391,74 @@ export function AdminBookingManager({ initialBookings }: { initialBookings: Book
               </div>
             </div>
 
-            <div>
-              <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1.5 flex items-center gap-1">
-                <Filter className="h-3 w-3" /> Status
-              </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
-              >
-                {STATUS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
+             <div>
+               <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1.5 flex items-center gap-1">
+                 <Filter className="h-3 w-3" /> Status
+               </label>
+               <select
+                 value={statusFilter}
+                 onChange={(e) => setStatusFilter(e.target.value)}
+                 className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+               >
+                 {STATUS_OPTIONS.map((opt) => (
+                   <option key={opt.value} value={opt.value}>{opt.label}</option>
+                 ))}
+               </select>
+             </div>
 
-            <div>
-              <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1.5 flex items-center gap-1">
-                <Tag className="h-3 w-3" /> Service
-              </label>
-              <select
-                value={serviceFilter}
-                onChange={(e) => setServiceFilter(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
-              >
-                {SERVICE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
+             <div>
+               <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1.5 flex items-center gap-1">
+                 <Tag className="h-3 w-3" /> Service
+               </label>
+               <select
+                 value={serviceFilter}
+                 onChange={(e) => setServiceFilter(e.target.value)}
+                 className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+               >
+                 {SERVICE_OPTIONS.map((opt) => (
+                   <option key={opt.value} value={opt.value}>{opt.label}</option>
+                 ))}
+               </select>
+             </div>
 
-            {hasActiveFilters && (
-              <button
-                onClick={resetFilters}
-                className="flex items-center justify-center gap-1.5 rounded-xl border border-border px-4 py-2.5 text-sm text-muted-foreground hover:border-gold/50 transition-colors"
-              >
-                <X className="h-4 w-4" /> Clear
-              </button>
-            )}
+             <div>
+               <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1.5 flex items-center gap-1">
+                 <Calendar className="h-3 w-3" /> Date
+               </label>
+               <select
+                 value={dateFilter}
+                 onChange={(e) => setDateFilter(e.target.value)}
+                 className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+               >
+                 {DATE_OPTIONS.map((opt) => (
+                   <option key={opt.value} value={opt.value}>{opt.label}</option>
+                 ))}
+               </select>
+             </div>
+
+             <div>
+               <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-1.5 flex items-center gap-1">
+                 <Filter className="h-3 w-3" /> Sort
+               </label>
+               <select
+                 value={sortOption}
+                 onChange={(e) => setSortOption(e.target.value)}
+                 className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold"
+               >
+                 {SORT_OPTIONS.map((opt) => (
+                   <option key={opt.value} value={opt.value}>{opt.label}</option>
+                 ))}
+               </select>
+             </div>
+
+             {hasActiveFilters && (
+               <button
+                 onClick={resetFilters}
+                 className="flex items-center justify-center gap-1.5 rounded-xl border border-border px-4 py-2.5 text-sm text-muted-foreground hover:border-gold/50 transition-colors"
+               >
+                 <X className="h-4 w-4" /> Clear
+               </button>
+             )}
           </div>
         </motion.div>
 

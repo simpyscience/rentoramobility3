@@ -81,6 +81,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="color-scheme" content="light" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${inter.variable} font-sans`}>
@@ -88,7 +89,6 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
-          enableSystem
           disableTransitionOnChange
         >
           <div className="relative flex min-h-screen flex-col">
