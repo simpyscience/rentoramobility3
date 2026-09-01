@@ -297,6 +297,15 @@ export function AdminBookingManager({ initialBookings }: { initialBookings: Book
   return (
     <div className="min-h-screen pt-24 pb-20">
       <div className="container-lux px-4 sm:px-6 lg:px-8">
+        {/* Admin Navigation */}
+        <div className="flex items-center gap-6 mb-6 pb-4 border-b border-border">
+          <span className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">Admin Panel</span>
+          <nav className="flex items-center gap-4">
+            <a href="/admin/bookings?tab=bookings" className="text-sm font-medium text-foreground border-b-2 border-gold pb-1">Bookings</a>
+            <a href="/admin/bookings?tab=reviews" className="text-sm font-medium text-muted-foreground hover:text-foreground pb-1">Customer Reviews</a>
+          </nav>
+        </div>
+
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>

@@ -15,6 +15,7 @@ import { CARS, getPopularCars } from '@/lib/data/cars';
 import { FAQS, WHY_CHOOSE_US } from '@/lib/data/site';
 import { DESTINATIONS } from '@/lib/data/destinations';
 import { getCarAssetPath } from '@/lib/data/images';
+import { ReviewsSection } from '@/components/sections/reviews-section';
 import dynamic from 'next/dynamic';
 // Below-the-fold sections: code-split so they don't bloat the initial/critical
 // bundle or block first paint / navigation responsiveness.
@@ -201,6 +202,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Customer Reviews */}
+      <ReviewsSection />
 
       {/* FAQ */}
       <section className="section-pad bg-card/30">
