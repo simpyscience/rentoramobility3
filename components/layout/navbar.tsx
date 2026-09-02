@@ -56,12 +56,12 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={cn(
-                  'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-                  isActive(link.href)
-                    ? 'text-gold'
-                    : 'text-foreground/75 hover:text-gold'
-                )}
+                   className={cn(
+                   'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                   isActive(link.href)
+                     ? 'text-red-600'
+                     : 'text-foreground/75 hover:text-red-600'
+                 )}
               >
                 {link.label}
               </Link>
@@ -131,10 +131,10 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={cn(
-                      'block rounded-lg px-4 py-3 text-base font-medium transition-colors',
-                      isActive(link.href) ? 'bg-gold/10 text-gold' : 'hover:bg-muted'
-                    )}
+                     className={cn(
+                       'block rounded-lg px-4 py-3 text-base font-medium transition-colors',
+                       isActive(link.href) ? 'bg-red-600/10 text-red-600' : 'hover:bg-muted hover:text-red-600'
+                     )}
                   >
                     {link.label}
                   </Link>
