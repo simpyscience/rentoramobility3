@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CONTACT, telLink } from '@/lib/data/contact';
 import { CARS, getPopularCars } from '@/lib/data/cars';
-import { FAQS, WHY_CHOOSE_US } from '@/lib/data/site';
+import { FAQS, WHY_CHOOSE_US, TRUST_BADGES } from '@/lib/data/site';
 import { DESTINATIONS } from '@/lib/data/destinations';
 import { getCarAssetPath } from '@/lib/data/images';
 import { ReviewsSection } from '@/components/sections/reviews-section';
@@ -40,24 +40,109 @@ export default function HomePage() {
 
   return (
     <>
-      {/* HERO — single, coherent Rentora Mobility homepage built on the supplied
-          car/road design. The supplied homepage asset is the visual source of truth;
-          the global navbar (layout) and this single functional booking widget are the
-          only foreground elements, so there is exactly one navbar, one logo, one hero
-          and one booking form (no duplicated headline / navigation / booking layer). */}
-      <section className="relative overflow-hidden min-h-[88vh] flex flex-col justify-end">
+      {/* HERO — premium vehicle presentation */}
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={HERO_IMAGE}
             alt="Rentora Mobility — India's premium mobility partner"
             fetchPriority="high"
             decoding="async"
-            className="h-full w-full object-cover object-center"
+            className="h-full w-full object-contain object-bottom sm:object-cover sm:object-center"
+            style={{ objectPosition: 'center bottom' }}
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="relative container-lux px-4 sm:px-6 lg:px-8 pb-10 md:pb-16">
-          <BookingWidget variant="hero" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent md:bg-gradient-to-r md:from-black/70 md:via-black/30 md:to-transparent" />
+        <div className="relative container-lux px-4 sm:px-6 lg:px-8 min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] flex flex-col justify-end pb-12 md:pb-16">
+          <div className="max-w-xl md:max-w-2xl mt-16 sm:mt-20 md:mt-0">
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+              Premium Mobility.<br />Trusted Journeys.
+            </h1>
+            <p className="mt-4 text-white/80 text-base sm:text-lg max-w-lg">
+              Rent luxury cars, SUVs and sedans across India with professional chauffeur service or self-drive freedom.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href="#book-ride">
+                <Button className="btn-gold rounded-full px-6 h-11 text-sm sm:text-base">Book Your Ride</Button>
+              </a>
+              <Link href="/fleet">
+                <Button variant="outline" className="rounded-full px-6 h-11 text-sm sm:text-base border-white/30 text-white hover:bg-white/10">View Fleet</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TRUST / KEY BENEFITS — premium intro before booking */}
+      <section className="section-pad bg-card/50">
+        <div className="container-lux">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-12">
+            <div className="lg:w-1/2">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/5 px-4 py-1.5 text-xs font-medium text-gold">
+                <ShieldCheck className="h-4 w-4" /> Trusted Across India
+              </div>
+              <h2 className="font-display mt-4 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
+                Premium Mobility, Seamlessly Delivered
+              </h2>
+              <p className="mt-4 text-muted-foreground max-w-md">
+                From luxury sedans to spacious SUVs, Rentora Mobility offers expertly maintained vehicles with
+                professional chauffeurs or self-drive freedom — available across 20+ cities in India.
+              </p>
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-medium">Verified Vehicles</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/10 text-gold">
+                    <Clock className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-medium">24/7 Support</span>
+                </div>
+              </div>
+            </div>
+            <div className="lg:w-1/2 grid grid-cols-3 gap-3">
+              <div className="rounded-xl overflow-hidden aspect-[4/3] bg-muted/30">
+                <img src="/images/cars/fleet.jpg" alt="Premium fleet" className="h-full w-full object-cover" loading="lazy" />
+              </div>
+              <div className="rounded-xl overflow-hidden aspect-[4/3] bg-muted/30">
+                <img src="/images/cars/fleet (2).jpg" alt="Luxury vehicle interior" className="h-full w-full object-cover" loading="lazy" />
+              </div>
+              <div className="rounded-xl overflow-hidden aspect-[4/3] bg-muted/30">
+                <img src="/images/cars/fleet (3).jpg" alt="Spacious SUV" className="h-full w-full object-cover" loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TRUST BADGES STRIP */}
+      <section className="py-6 bg-gold/5 border-y border-gold/20">
+        <div className="container-lux">
+          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
+            {TRUST_BADGES.map((badge, i) => (
+              <span key={i} className="text-sm font-medium text-foreground/70 flex items-center gap-2">
+                <span className="h-1 w-1 rounded-full bg-gold" />
+                {badge}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* BOOK YOUR RIDE — premium booking section */}
+      <section id="book-ride" className="section-pad">
+        <div className="container-lux max-w-4xl">
+          <SectionHeading
+            eyebrow="Book Your Ride"
+            title="Tell us where and when you need your vehicle"
+            subtitle="Get instant availability and transparent pricing in minutes."
+          />
+          <div className="mt-8">
+            <BookingWidget variant="default" />
+          </div>
         </div>
       </section>
 

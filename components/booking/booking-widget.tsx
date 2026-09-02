@@ -1,15 +1,16 @@
 'use client';
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Search, MapPin, Calendar, Clock, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CITIES } from '@/lib/data/site';
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Search, MapPin, Calendar, Clock, ArrowRight, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CITIES } from "@/lib/data/site";
+import { cn } from "@/lib/utils";
 
 const TIMES = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
 
-export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compact' }) {
+export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compact' | 'default' }) {
   const router = useRouter();
   const [fullName, setFullName] = React.useState('');
   const [phone, setPhone] = React.useState('');
@@ -55,6 +56,77 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
     { icon: Calendar, label: 'Return Date', value: dropDate, set: setDropDate, type: 'date', min: pickupDate || today, placeholder: 'Select date' },
     { icon: Clock, label: 'Return Time', value: dropTime, set: setDropTime, options: TIMES, placeholder: 'Select time' },
   ];
+
+  // Full booking form variant (for dedicated booking section)
+  if (variant === 'default') {
+    return (
+      <form onSubmit={handleSearch} className="bg-white rounded-2xl shadow-luxury p-5 sm:p-6 md:p-8">
+        {/* Customer Details */}
+        <div className="mb-6">
+          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Customer Details</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <FieldInput icon={Search} label="Full Name" value={fullName} set={setFullName} placeholder="Your full name" type="text" default />
+            <FieldInput icon={Search} label="Mobile Number" value={phone} set={setPhone} placeholder="+91 98765 43210" type="tel" default />
+            <FieldInput icon={Search} label="Email Address" value={email} set={setEmail} placeholder="you@example.com" type="email" default />
+          </div>
+        </div>
+
+        {/* Trip Details */}
+        <div className="mb-6">
+          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Trip Details</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {fields.map((f, i) => (
+              <FieldInput key={i} {...f} default />
+            ))}
+          </div>
+        </div>
+
+        {/* Service Type */}
+        <div className="mb-6">
+          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Service</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setServiceType('self-drive')}
+              className={cn(
+                'rounded-xl py-3.5 text-sm font-medium transition-colors border',
+                serviceType === 'self-drive' ? 'btn-gold border-gold' : 'border-border hover:border-gold/50'
+              )}
+            >
+              Self Drive
+            </button>
+            <button
+              type="button"
+              onClick={() => setServiceType('chauffeur')}
+              className={cn(
+                'rounded-xl py-3.5 text-sm font-medium transition-colors border',
+                serviceType === 'chauffeur' ? 'btn-gold border-gold' : 'border-border hover:border-gold/50'
+              )}
+            >
+              With Chauffeur
+            </button>
+          </div>
+        </div>
+
+        {/* Special Requirements */}
+        <div className="mb-6">
+          <label className="text-sm font-medium mb-1.5 block">Special Requirements (optional)</label>
+          <textarea
+            value={specialRequirements}
+            onChange={(e) => setSpecialRequirements(e.target.value)}
+            placeholder="Any special requests..."
+            rows={3}
+            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold resize-none"
+          />
+        </div>
+
+        <Button type="submit" className="btn-gold w-full rounded-xl h-12 text-base group">
+          Check Availability
+          <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
+        </Button>
+      </form>
+    );
+  }
 
   if (variant === 'hero') {
     return (
@@ -183,6 +255,7 @@ function FieldInput({
   min,
   compact,
   hero,
+  default: isDefault,
 }: {
   icon: any;
   label: string;
@@ -194,11 +267,12 @@ function FieldInput({
   min?: string;
   compact?: boolean;
   hero?: boolean;
+  default?: boolean;
 }) {
   return (
-    <label className={`block ${hero ? '' : ''}`}>
-      <span className={`text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1.5 ${hero ? 'text-foreground/70 font-semibold normal-case tracking-normal' : ''}`}>
-        <Icon className={`h-3.5 w-3.5 text-gold ${hero ? 'h-4 w-4' : ''}`} /> {label}
+    <label className={`block ${hero ? '' : isDefault ? 'text-base' : ''}`}>
+      <span className={`text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 mb-1.5 ${hero ? 'text-foreground/70 font-semibold normal-case tracking-normal' : isDefault ? 'text-foreground/80 font-medium normal-case' : ''}`}>
+        <Icon className={`h-3.5 w-3.5 text-gold ${hero ? 'h-4 w-4' : isDefault ? 'h-4 w-4' : ''}`} /> {label}
       </span>
       {type === 'date' ? (
         <input
@@ -206,7 +280,15 @@ function FieldInput({
           value={value}
           min={min}
           onChange={(e) => set(e.target.value)}
-          className={`w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors ${hero ? 'border-0 bg-muted/50 py-3' : ''}`}
+          className={`w-full rounded-xl border border-border focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors text-sm ${
+            isDefault
+              ? 'bg-background px-4 py-3 h-12'
+              : hero
+                ? 'border-0 bg-muted/50 py-3'
+                : compact
+                  ? 'bg-background/60 px-3 py-2.5'
+                  : 'bg-background/60 px-3 py-2.5'
+          }`}
         />
       ) : type === 'text' || type === 'tel' || type === 'email' ? (
         <input
@@ -214,21 +296,37 @@ function FieldInput({
           value={value}
           onChange={(e) => set(e.target.value)}
           placeholder={placeholder}
-          className={`w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors ${hero ? 'border-0 bg-muted/50 py-3' : ''}`}
+          className={`w-full rounded-xl border border-border focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors text-sm ${
+            isDefault
+              ? 'bg-background px-4 py-3 h-12'
+              : hero
+                ? 'border-0 bg-muted/50 py-3'
+                : compact
+                  ? 'bg-background/60 px-3 py-2.5'
+                  : 'bg-background/60 px-3 py-2.5'
+          }`}
         />
       ) : (
         <div className="relative">
           <select
             value={value}
             onChange={(e) => set(e.target.value)}
-            className={`w-full rounded-xl border border-border bg-background/60 px-3 py-2.5 text-sm focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors appearance-none ${hero ? 'border-0 bg-muted/50 py-3 pr-10' : ''}`}
+            className={`w-full rounded-xl border border-border focus:border-gold focus:ring-1 focus:ring-gold outline-none transition-colors text-sm appearance-none ${
+            isDefault
+              ? 'bg-background px-4 py-3 h-12 pr-10'
+              : hero
+                ? 'border-0 bg-muted/50 py-3 pr-10'
+                : compact
+                  ? 'bg-background/60 px-3 py-2.5'
+                  : 'bg-background/60 px-3 py-2.5'
+          }`}
           >
             <option value="">{placeholder}</option>
             {options?.map((opt) => (
               <option key={opt} value={opt}>{opt}</option>
             ))}
           </select>
-          <div className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground ${hero ? 'top-[calc(50%-2px)]' : 'top-[calc(50%-8px)]'}`}>
+          <div className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground ${hero ? 'top-[calc(50%-2px)]' : isDefault ? 'top-[calc(50%-2px)]' : 'top-[calc(50%-8px)]'}`}>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
         </div>
