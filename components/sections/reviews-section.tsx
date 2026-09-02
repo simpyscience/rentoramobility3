@@ -5,6 +5,7 @@ import { Star, Quote, Loader2, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ReviewForm } from "@/components/sections/review-form";
+import { cn } from "@/lib/utils";
 
 interface Review {
   id: string;
@@ -22,6 +23,7 @@ export function ReviewsSection() {
   const [averageRating, setAverageRating] = React.useState(0);
   const [totalReviews, setTotalReviews] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const [showForm, setShowForm] = React.useState(false);
 
   React.useEffect(() => {
@@ -36,9 +38,11 @@ export function ReviewsSection() {
         setReviews(data.reviews);
         setAverageRating(data.averageRating);
         setTotalReviews(data.totalReviews);
+      } else {
+        setError(data.error || "Unable to load reviews.");
       }
-    } catch (error) {
-      console.error("Failed to fetch reviews:", error);
+    } catch {
+      setError("Unable to load reviews at this time.");
     } finally {
       setLoading(false);
     }
@@ -57,12 +61,12 @@ export function ReviewsSection() {
   );
 
   return (
-    <section className="py-20 bg-muted/30">
-      <div className="container-lux px-4 sm:px-6 lg:px-8">
+    <section className="section-pad bg-card/30">
+      <div className="container-lux">
         <SectionHeading
-          eyebrow="What Our Clients Say"
-          title="Trusted by Clients Across India"
-          subtitle="Real experiences from customers who chose Rentora Mobility for their journeys."
+          eyebrow="Customer Reviews"
+          title="What Our Clients Say"
+          subtitle="Trusted by clients who choose Rentora Mobility for their journeys."
         />
 
         {/* Average Rating */}
@@ -78,15 +82,21 @@ export function ReviewsSection() {
           </div>
         )}
 
-        {/* Reviews Grid */}
+        {/* Reviews Grid / Loading / Error / Empty */}
         {loading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-gold" />
           </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <MessageSquare className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="font-sans text-lg font-semibold mb-2">Reviews Currently Unavailable</h3>
+            <p className="text-muted-foreground text-sm">{error}</p>
+          </div>
         ) : reviews.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {reviews.map((review) => (
-              <div key={review.id} className="bg-white rounded-2xl p-6 border border-border/50 hover:border-gold/30 transition-colors">
+              <div key={review.id} className="bg-white rounded-2xl p-6 border border-border/50 hover:border-gold/30 transition-colors luxury-card">
                 <Quote className="h-8 w-8 text-gold/30 mb-3" />
                 <p className="text-sm text-foreground leading-relaxed mb-4">{review.review_text}</p>
                 <div className="flex items-center justify-between mb-3">
@@ -123,8 +133,4 @@ export function ReviewsSection() {
       {showForm && <ReviewForm onClose={() => setShowForm(false)} />}
     </section>
   );
-}
-
-function cn(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }
