@@ -152,7 +152,7 @@ export const FAQS: FAQ[] = [
   },
   {
     q: 'Do you offer corporate rentals and monthly subscriptions?',
-    a: 'Yes, we provide dedicated corporate rentals, monthly subscriptions, and long-term lease options for businesses. Contact us at rentoramobility@protonmail.com or +91 9958021329 / +91 7291973553 for custom corporate packages.',
+    a: 'Yes, we provide dedicated corporate rentals, monthly subscriptions, and long-term lease options for businesses. Contact us at rentoramobility@protonmail.com or +91 9958021329 for custom corporate packages.',
   },
   {
     q: 'How do I pay for my booking?',

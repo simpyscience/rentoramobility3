@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import {
+  sendBookingWhatsAppNotification,
+  BookingRecord,
+} from "@/lib/whatsapp";
 
 const ALLOWED_SERVICE_TYPES = ["self-drive", "chauffeur"] as const;
 
@@ -262,6 +266,31 @@ export async function POST(request: Request) {
   }
 
   const booking = Array.isArray(data) ? data[0] : data;
+
+  /* ------------------------------------------------------------------ */
+  /*  WhatsApp notification (server-side only)                          */
+  /*  Sent ONLY after the booking was successfully committed to Supabase. */
+  /*  A notification failure must NEVER roll back the booking.           */
+  /*  The booking response below is unaffected by this side-effect.      */
+  /* ------------------------------------------------------------------ */
+  try {
+    const notifyResult = await sendBookingWhatsAppNotification(
+      booking as BookingRecord
+    );
+    if (!notifyResult.sent && !notifyResult.skipped) {
+      console.error(
+        "[ai/create-booking] WhatsApp notification failed:",
+        notifyResult.reason
+      );
+    }
+  } catch (err) {
+    // Defensive guard: the WhatsApp layer is designed not to throw, but if
+    // it ever does, we must still return a successful booking response.
+    console.error(
+      "[ai/create-booking] Unexpected WhatsApp notification error:",
+      err instanceof Error ? err.message : String(err)
+    );
+  }
 
   return NextResponse.json({
     success: true,

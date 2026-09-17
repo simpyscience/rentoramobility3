@@ -10,16 +10,26 @@ import { CarCard } from '@/components/fleet/car-card';
 import { CITIES } from '@/lib/data/site';
 import { CONTACT, whatsappLink } from '@/lib/data/contact';
 import { getCarBySlug, getRelatedCars, type Car } from '@/lib/data/cars';
+import { VehicleTariffSheet } from '@/components/tariff/tariff-sheet';
+import { isChauffeurServiceType, type ServiceTypeKey } from '@/lib/data/tariffs';
 import { cn } from '@/lib/utils';
 
 const TIMES = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
 
 const SERVICE_TYPES = [
-  { key: 'chauffeur', label: 'Chauffeur-driven', description: 'Professional driver included' },
+  { key: 'local', label: 'Local', description: 'Hourly & city packages' },
+  { key: 'outstation', label: 'Outstation', description: 'Long-distance travel' },
+  { key: 'airport', label: 'Airport & Transfers', description: 'Pickup & drop' },
+  { key: 'wedding', label: 'Wedding', description: 'Weddings & events' },
+  { key: 'packages', label: 'Packages', description: 'Custom packages' },
   { key: 'self-drive', label: 'Self-drive', description: 'Drive yourself' },
 ] as const;
 
 type ServiceType = (typeof SERVICE_TYPES)[number]['key'];
+
+const SERVICE_TYPE_LABELS: Record<string, string> = Object.fromEntries(
+  SERVICE_TYPES.map((s) => [s.key, s.label])
+);
 
 function formatDateInput(date: Date): string {
   return date.toISOString().split('T')[0];
@@ -83,7 +93,9 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
   }
 
   const basePrice = car.pricePerDay * days;
-  const chauffeurPrice = serviceType === 'chauffeur' ? 500 * days : 0;
+  const isChauffeur = isChauffeurServiceType(serviceType);
+  const activeTariffCategory: ServiceTypeKey | undefined = isChauffeur ? (serviceType as ServiceTypeKey) : undefined;
+  const chauffeurPrice = isChauffeur ? 500 * days : 0;
   const subtotal = basePrice + chauffeurPrice;
   const gst = subtotal * 0.05;
   const total = subtotal + gst;
@@ -166,7 +178,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
           phone,
           email,
           vehicle: car.name,
-          service_type: serviceType,
+          service_type: isChauffeur ? 'chauffeur' : 'self-drive',
           pickup_location: pickupCity,
           dropoff_location: dropCity,
           pickup_datetime: pickupDateTime,
@@ -210,8 +222,8 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                 <span className="font-semibold">{car.name}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Service</span>
-                <span className="font-semibold">{serviceType === 'chauffeur' ? 'Chauffeur-driven' : 'Self-drive'}</span>
+                  <span className="text-muted-foreground">Service</span>
+                  <span className="font-semibold">{SERVICE_TYPE_LABELS[serviceType] ?? 'Self-drive'}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Pickup</span>
@@ -372,11 +384,23 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
               <fieldset className="space-y-4 mb-8">
                 <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Service Type</legend>
                 {errors.serviceType && <p className="text-xs text-red-500 mb-2 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.serviceType}</p>}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Service Type">
                   {SERVICE_TYPES.map((svc) => {
-                    const available = svc.key === 'chauffeur' ? car.chauffeurAvailable : car.selfDrive;
+                    const available = svc.key === 'self-drive' ? car.selfDrive : car.chauffeurAvailable;
                     return (
-                      <button key={svc.key} type="button" disabled={!available} onClick={() => setServiceType(svc.key)} className={cn('flex flex-col items-center gap-2 rounded-xl border py-4 text-sm font-medium transition-all', serviceType === svc.key ? 'border-gold bg-gold/10 text-gold shadow-gold' : 'border-border hover:border-gold/50', !available && 'opacity-40 cursor-not-allowed')}>
+                      <button
+                        key={svc.key}
+                        type="button"
+                        disabled={!available}
+                        onClick={() => setServiceType(svc.key)}
+                        aria-pressed={serviceType === svc.key}
+                        className={cn(
+                          'flex flex-col items-center gap-2 rounded-xl border py-4 text-sm font-medium transition-colors',
+                          serviceType === svc.key ? 'btn-gold border-gold' : 'border-border hover:border-gold/50',
+                          !available && 'opacity-40 cursor-not-allowed',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold'
+                        )}
+                      >
                         <span>{svc.label}</span>
                         <span className="text-[10px] text-muted-foreground normal-case">{svc.description}</span>
                         {!available && <span className="text-[10px] text-muted-foreground">(Unavailable)</span>}
@@ -486,20 +510,29 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                       <span className="font-semibold">₹{basePrice.toLocaleString('en-IN')}</span>
                     </div>
                   )}
-                  {serviceType === 'chauffeur' && days > 0 && (
+                  {isChauffeur && days > 0 && (
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">Chauffeur charges</span>
                       <span className="font-semibold">₹{chauffeurPrice.toLocaleString('en-IN')}</span>
                     </div>
                   )}
-                  <div className="border-t border-border pt-3 mt-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Estimated Total</span>
-                      <span className="font-bold text-lg text-gold">₹{total.toFixed(0)}</span>
+                    <div className="border-t border-border pt-3 mt-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Estimated Total</span>
+                        <span className="font-bold text-lg text-gold">₹{total.toFixed(0)}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">Includes base rental and 5% GST</p>
                     </div>
-                    <p className="text-[10px] text-muted-foreground mt-1">Includes base rental and 5% GST</p>
+
+                    {activeTariffCategory && (
+                      <div className="border-t border-border pt-3 mt-3">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-muted-foreground mb-2">
+                          Applicable Tariff
+                        </div>
+                        <VehicleTariffSheet car={car} activeCategory={activeTariffCategory} compact />
+                      </div>
+                    )}
                   </div>
-                </div>
               </div>
 
               {/* Contact */}

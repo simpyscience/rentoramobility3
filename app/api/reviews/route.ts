@@ -1,20 +1,64 @@
 import { NextResponse } from "next/server";
+import crypto from "node:crypto";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import {
+  PublicReview,
+  MAX_NAME_LENGTH,
+  MAX_REVIEW_LENGTH,
+  MAX_EMAIL_LENGTH,
+  RATING_MIN,
+  RATING_MAX,
+} from "@/lib/reviews";
 
-const MAX_REVIEW_LENGTH = 2000;
-const MAX_NAME_LENGTH = 100;
-const MAX_LOCATION_LENGTH = 100;
+const DEDUPE_WINDOW_MIN = 5;
+const AVATAR_URL_RE = /^\/storage\/v1\/object\/public\/review-avatars\/.+$/;
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
 function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= MAX_EMAIL_LENGTH;
 }
 
-function sanitizeString(value: string, maxLength: number): string {
-  return value.trim().slice(0, maxLength);
+function gravatarUrl(email: string): string {
+  const normalized = email.trim().toLowerCase();
+  const hash = crypto.createHash("md5").update(normalized).digest("hex");
+  return `https://www.gravatar.com/avatar/${hash}?d=404&s=96`;
+}
+
+function isValidAvatarUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return (
+      u.hostname.endsWith(".supabase.co") &&
+      AVATAR_URL_RE.test(u.pathname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+function toPublic(row: {
+  id: string;
+  customer_name: string;
+  rating: number;
+  review_text: string;
+  customer_avatar: string | null;
+  email: string | null;
+  created_at: string;
+}): PublicReview {
+  // Email is intentionally NOT returned. It is only used server-side
+  // to derive a Gravatar hash (which exposes no raw email address).
+  const avatar = row.customer_avatar || (row.email ? gravatarUrl(row.email) : null) || null;
+  return {
+    id: row.id,
+    name: row.customer_name,
+    rating: row.rating,
+    review: row.review_text,
+    avatar_url: avatar,
+    created_at: row.created_at,
+  };
 }
 
 export async function POST(request: Request) {
@@ -22,114 +66,145 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { success: false, error: "Invalid request body." },
-      { status: 400 }
-    );
+    return NextResponse.json({ success: false, error: "Invalid request body." }, { status: 400 });
   }
 
-  const { customer_name, email, rating, review_text, vehicle, service_type, location } = body;
+  const rawName = body.name ?? body.customer_name;
+  const name = isNonEmptyString(rawName) ? (rawName as string).trim().slice(0, MAX_NAME_LENGTH) : "";
+  const emailRaw = body.email == null ? "" : String(body.email);
+  const rating = body.rating;
+  const rawReview = body.review ?? body.review_text;
+  const review = isNonEmptyString(rawReview) ? (rawReview as string).trim().slice(0, MAX_REVIEW_LENGTH) : "";
+  const avatarRaw = body.avatar_url == null ? "" : String(body.avatar_url);
 
-  // Validate required fields
-  if (!isNonEmptyString(customer_name)) {
-    return NextResponse.json(
-      { success: false, error: "Please enter your name." },
-      { status: 400 }
-    );
+  if (!name) {
+    return NextResponse.json({ success: false, error: "Please enter your name." }, { status: 400 });
+  }
+  if (name.length > MAX_NAME_LENGTH) {
+    return NextResponse.json({ success: false, error: "Name is too long." }, { status: 400 });
+  }
+  if (emailRaw !== "") {
+    if (!isValidEmail(emailRaw.trim().toLowerCase())) {
+      return NextResponse.json({ success: false, error: "Please enter a valid email address." }, { status: 400 });
+    }
+  }
+  if (typeof rating !== "number" || !Number.isInteger(rating) || rating < RATING_MIN || rating > RATING_MAX) {
+    return NextResponse.json({ success: false, error: "Please select a rating between 1 and 5." }, { status: 400 });
+  }
+  if (!review) {
+    return NextResponse.json({ success: false, error: "Please write your review." }, { status: 400 });
+  }
+  if (review.length > MAX_REVIEW_LENGTH) {
+    return NextResponse.json({ success: false, error: "Review is too long." }, { status: 400 });
   }
 
-  if (!isNonEmptyString(email) || !isValidEmail(email)) {
+  const cleanEmail = emailRaw.trim().toLowerCase() || null;
+  const avatarUrl = avatarRaw && isValidAvatarUrl(avatarRaw) ? avatarRaw : null;
+  const now = new Date().toISOString();
+
+  const selectCols = "id,customer_name,rating,review_text,customer_avatar,email,created_at";
+
+  try {
+    // Anti-duplicate guard: if an identical review was just submitted (rapid
+    // double-click / repeated submit), return the existing one instead of
+    // creating a second record.
+    const windowAgo = new Date(Date.now() - DEDUPE_WINDOW_MIN * 60 * 1000).toISOString();
+    let dedupeQuery = supabaseAdmin
+      .from("reviews")
+      .select(selectCols)
+      .eq("customer_name", name)
+      .eq("rating", rating)
+      .eq("review_text", review)
+      .gte("created_at", windowAgo)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    // Match email exactly (NULL when email is optional and not provided).
+    if (cleanEmail) {
+      dedupeQuery = dedupeQuery.eq("email", cleanEmail);
+    } else {
+      dedupeQuery = dedupeQuery.is("email", null);
+    }
+
+    const { data: existing, error: dupErr } = await dedupeQuery.maybeSingle();
+
+    if (dupErr) {
+      // Never expose DB internals; just log and continue to a fresh insert.
+      console.error("Review dedupe lookup error:", dupErr.message);
+    } else if (existing) {
+      return NextResponse.json({
+        success: true,
+        message: "Thank you for sharing your experience with Rentora Mobility.",
+        review: toPublic(existing),
+      });
+    }
+
+    // Auto-publish: status is forced to 'approved' server-side so the review is
+    // immediately public. The client cannot set the status.
+    const { data, error } = await supabaseAdmin
+      .from("reviews")
+      .insert({
+        customer_name: name,
+        email: cleanEmail,
+        rating,
+        review_text: review,
+        customer_avatar: avatarUrl,
+        status: "approved",
+        approved_at: now,
+      })
+      .select(selectCols)
+      .single();
+
+    if (error) {
+      console.error("Review submission error:", error.message);
+      return NextResponse.json(
+        { success: false, error: "Unable to submit your review. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Thank you for sharing your experience with Rentora Mobility.",
+      review: toPublic(data),
+    });
+  } catch (err) {
+    console.error("Review submission exception:", err);
     return NextResponse.json(
-      { success: false, error: "Please enter a valid email address." },
-      { status: 400 }
-    );
-  }
-
-  if (!rating || typeof rating !== "number" || rating < 1 || rating > 5 || !Number.isInteger(rating)) {
-    return NextResponse.json(
-      { success: false, error: "Please select a rating between 1 and 5." },
-      { status: 400 }
-    );
-  }
-
-  if (!isNonEmptyString(review_text)) {
-    return NextResponse.json(
-      { success: false, error: "Please write your review." },
-      { status: 400 }
-    );
-  }
-
-  // Sanitize inputs
-  const cleanName = sanitizeString(customer_name, MAX_NAME_LENGTH);
-  const cleanEmail = email.trim().toLowerCase();
-  const cleanReview = sanitizeString(review_text, MAX_REVIEW_LENGTH);
-  const cleanVehicle = isNonEmptyString(vehicle) ? sanitizeString(vehicle, 100) : null;
-  const cleanServiceType = isNonEmptyString(service_type) ? sanitizeString(service_type, 50) : null;
-  const cleanLocation = isNonEmptyString(location) ? sanitizeString(location, MAX_LOCATION_LENGTH) : null;
-
-  const { data, error } = await supabaseAdmin
-    .from("reviews")
-    .insert({
-      customer_name: cleanName,
-      email: cleanEmail,
-      rating,
-      review_text: cleanReview,
-      vehicle: cleanVehicle,
-      service_type: cleanServiceType,
-      location: cleanLocation,
-      status: "pending",
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Review submission error:", error);
-    return NextResponse.json(
-      { success: false, error: "Unable to submit review. Please try again." },
+      { success: false, error: "Unable to submit your review. Please try again." },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({
-    success: true,
-    message: "Thank you! Your review has been submitted and is pending approval.",
-    review: data,
-  });
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const limit = Math.min(parseInt(searchParams.get("limit") || "10", 10), 50);
+  const limit = Math.min(Math.max(1, parseInt(searchParams.get("limit") || "12", 10)), 50);
 
-  const { data, error } = await supabaseAdmin
-    .from("reviews")
-    .select("id, customer_name, rating, review_text, vehicle, service_type, location, created_at")
-    .eq("status", "approved")
-    .order("created_at", { ascending: false })
-    .limit(limit);
+  try {
+    const { data, error } = await supabaseAdmin
+      .from("reviews")
+      .select("id,customer_name,rating,review_text,customer_avatar,email,created_at")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (error) {
-    console.error("Reviews fetch error:", error);
-    return NextResponse.json(
-      { success: false, error: "Unable to fetch reviews." },
-      { status: 500 }
-    );
+    if (error) {
+      console.error("Reviews fetch error:", error.message);
+      return NextResponse.json({ success: false, error: "Unable to load reviews." }, { status: 500 });
+    }
+
+    const reviews = (data || []).map(toPublic);
+    const total = reviews.length;
+    const average = total > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / total : 0;
+
+    return NextResponse.json({
+      success: true,
+      reviews,
+      averageRating: Math.round(average * 10) / 10,
+      totalReviews: total,
+    });
+  } catch (err) {
+    console.error("Reviews fetch exception:", err);
+    return NextResponse.json({ success: false, error: "Unable to load reviews." }, { status: 500 });
   }
-
-  // Calculate average rating
-  const { data: avgData } = await supabaseAdmin
-    .from("reviews")
-    .select("rating")
-    .eq("status", "approved");
-
-  const avgRating = avgData && avgData.length > 0
-    ? avgData.reduce((sum, r) => sum + r.rating, 0) / avgData.length
-    : 0;
-
-  return NextResponse.json({
-    success: true,
-    reviews: data || [],
-    averageRating: Math.round(avgRating * 10) / 10,
-    totalReviews: avgData?.length || 0,
-  });
 }

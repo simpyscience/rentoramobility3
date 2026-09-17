@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Phone, Mail, MessageCircle, MapPin, Clock, Send, CheckCircle2, AlertCircle, Copy, Headset } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
-import { CONTACT, whatsappLink, whatsapp2Link, telLink, tel2Link, mailtoLink } from '@/lib/data/contact';
+import { CONTACT, whatsappLink, telLink, mailtoLink } from '@/lib/data/contact';
 import { cn } from '@/lib/utils';
 
 type FormState = 'idle' | 'submitting' | 'sent' | 'failed';
@@ -80,9 +80,7 @@ export function ContactPage() {
       icon: Phone,
       label: 'Call Us',
       value: CONTACT.phoneDisplay,
-      secondary: CONTACT.phone2Display,
       href: telLink(),
-      secondaryHref: tel2Link(),
       color: 'text-gold',
       aria: 'Call Rentora Mobility',
     },
@@ -90,9 +88,7 @@ export function ContactPage() {
       icon: MessageCircle,
       label: 'WhatsApp',
       value: CONTACT.whatsappDisplay,
-      secondary: CONTACT.whatsapp2Display,
       href: whatsappLink('Hello Rentora Mobility'),
-      secondaryHref: whatsapp2Link('Hello Rentora Mobility'),
       color: 'text-[#25D366]',
       aria: 'WhatsApp Rentora Mobility',
     },

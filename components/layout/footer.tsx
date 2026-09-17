@@ -60,13 +60,13 @@ export function Footer() {
             </p>
             <div className="flex flex-col gap-2 text-sm">
               <a href={telLink()} className="flex items-center gap-2 hover:text-gold transition-colors">
-                <Phone className="h-4 w-4 text-gold" /> {CONTACT.phoneDisplay} · {CONTACT.phone2Display}
+                <Phone className="h-4 w-4 text-gold" /> {CONTACT.phoneDisplay}
               </a>
               <a href={`mailto:${CONTACT.email}`} className="flex items-center gap-2 hover:text-gold transition-colors">
                 <Mail className="h-4 w-4 text-gold" /> {CONTACT.email}
               </a>
               <a href={whatsappLink('Hello Rentora Mobility')} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
-                <MessageCircle className="h-4 w-4 text-gold" /> WhatsApp {CONTACT.whatsappDisplay} · {CONTACT.whatsapp2Display}
+                <MessageCircle className="h-4 w-4 text-gold" /> WhatsApp {CONTACT.whatsappDisplay}
               </a>
               <div className="flex items-start gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4 text-gold mt-0.5 shrink-0" />

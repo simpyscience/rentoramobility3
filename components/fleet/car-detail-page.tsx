@@ -10,6 +10,7 @@ import { CarCard } from '@/components/fleet/car-card';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
 import { getRelatedCars, type Car } from '@/lib/data/cars';
+import { VehicleTariffSheet } from '@/components/tariff/tariff-sheet';
 import { DESTINATIONS, type Destination, type DestinationTravelInfo } from '@/lib/data/destinations';
 import { cn } from '@/lib/utils';
 
@@ -155,6 +156,11 @@ export function CarDetailPage({ car }: { car: Car }) {
                 ))}
               </div>
             )}
+
+            {/* Dynamic Vehicle-wise Pricing & Tariff Sheet */}
+            <div className="mt-8">
+              <VehicleTariffSheet car={car} />
+            </div>
 
             {/* Description */}
             <div className="luxury-card p-6 md:p-8 mt-8">
