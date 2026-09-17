@@ -27,6 +27,7 @@ const FOOTER_LINKS = {
     { href: '/team', label: 'Our Team' },
     { href: '/fleet', label: 'Fleet' },
     { href: '/destinations', label: 'Destinations' },
+    { href: '/reviews', label: 'Reviews' },
     { href: '/services', label: 'Services' },
     { href: '/blog', label: 'Blog' },
     { href: '/contact', label: 'Contact' },

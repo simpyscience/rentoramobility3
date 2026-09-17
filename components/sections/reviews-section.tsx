@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Star, Loader2, MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { Star, Loader2, MessageSquare, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { ReviewAvatar } from "@/components/reviews/review-avatar";
 import { ReviewForm } from "@/components/sections/review-form";
-import { PublicReview, getInitials, formatReviewDate } from "@/lib/reviews";
+import { PublicReview, formatReviewDate } from "@/lib/reviews";
 import { cn } from "@/lib/utils";
 
 const SITE_URL = "https://rentoramobility.in";
@@ -154,24 +155,17 @@ export function ReviewsSection() {
           <>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               {data.reviews.map((review) => (
-                <article
-                  key={review.id}
-                  className="luxury-card p-6 flex flex-col h-full"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <Avatar className="h-12 w-12 border-2 border-white shadow">
-                      {review.avatar_url ? (
-                        <AvatarImage src={review.avatar_url} alt={review.name} loading="lazy" />
-                      ) : null}
-                      <AvatarFallback className="bg-gold/10 text-gold font-semibold">
-                        {getInitials(review.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold text-sm leading-tight">{review.name}</p>
-                      {renderStars(review.rating)}
-                    </div>
-                  </div>
+                   <article
+                   key={review.id}
+                   className="luxury-card p-6 flex flex-col h-full"
+                 >
+                   <div className="flex items-center gap-3 mb-4">
+                     <ReviewAvatar review={review} />
+                     <div>
+                       <p className="font-semibold text-sm leading-tight">{review.name}</p>
+                       {renderStars(review.rating)}
+                     </div>
+                   </div>
 
                   <blockquote className="mt-1 text-sm text-foreground leading-relaxed flex-1">
                     {review.review}
@@ -209,6 +203,15 @@ export function ReviewsSection() {
             <Button onClick={openForm} className="btn-gold rounded-full px-8 h-12">
               <MessageSquare className="h-4 w-4 mr-2" /> Write a Review
             </Button>
+            <div className="mt-3">
+              <Link
+                href="/reviews"
+                className="text-sm text-muted-foreground hover:text-gold transition-colors inline-flex items-center gap-1"
+              >
+                View all reviews
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
           </div>
         )}
       </div>

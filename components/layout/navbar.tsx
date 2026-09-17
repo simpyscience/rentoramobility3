@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Home' },
   { href: '/fleet', label: 'Fleet' },
   { href: '/destinations', label: 'Destinations' },
+  { href: '/reviews', label: 'Reviews' },
   { href: '/blog', label: 'Blog' },
   { href: '/#chauffeurs', label: 'Chauffeurs' },
   { href: '/about', label: 'About Us' },

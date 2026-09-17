@@ -3,7 +3,10 @@ import { randomUUID } from "node:crypto";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 const AVATAR_BUCKET = "review-avatars";
-const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2 MB — appropriate for a small avatar
+// Input ceiling: large enough for a normal phone/camera photo. The customer
+// never sees this number — the form resizes/compesses the image client-side
+// before upload, so typical uploads are tiny. This is just a safety backstop.
+const MAX_AVATAR_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp"];
 const MIME_TO_EXT: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -52,10 +55,27 @@ const BUCKET_OPTIONS = {
 } as const;
 
 async function ensureBucket(): Promise<void> {
+  // Create if missing...
   try {
     await supabaseAdmin.storage.createBucket(AVATAR_BUCKET, BUCKET_OPTIONS);
   } catch {
-    // Bucket already exists — nothing to do. (createBucket errors on duplicate.)
+    // Bucket already exists (createBucket errors on duplicate) — fall through.
+  }
+  // ...then (re)assert the desired config on the *existing* bucket.
+  // createBucket does NOT mutate an existing bucket, so an older bucket that
+  // was created with a stricter 2 MB limit is upgraded to the 10 MB ceiling
+  // here. service_role bypasses RLS, so this is permitted.
+  try {
+    await supabaseAdmin.storage.updateBucket(AVATAR_BUCKET, {
+      public: BUCKET_OPTIONS.public,
+      allowedMimeTypes: BUCKET_OPTIONS.allowedMimeTypes,
+      fileSizeLimit: BUCKET_OPTIONS.fileSizeLimit,
+    });
+  } catch (updateErr) {
+    console.error(
+      "Could not update avatar bucket config:",
+      (updateErr as Error)?.message
+    );
   }
 }
 
@@ -69,7 +89,7 @@ export async function POST(request: Request) {
     }
 
     if (file.size > MAX_AVATAR_BYTES) {
-      return NextResponse.json({ success: false, error: "Image must be 2 MB or smaller." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "That photo is too large. Please choose a smaller image." }, { status: 400 });
     }
 
     // Validate declared MIME type first (cheap), then verify magic bytes (spoof-proof).

@@ -1,17 +1,15 @@
 import { NextResponse } from "next/server";
-import crypto from "node:crypto";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import {
-  PublicReview,
   MAX_NAME_LENGTH,
   MAX_REVIEW_LENGTH,
   MAX_EMAIL_LENGTH,
   RATING_MIN,
   RATING_MAX,
 } from "@/lib/reviews";
+import { getPublicReviews, isValidAvatarUrl, toPublic } from "@/lib/reviews.server";
 
 const DEDUPE_WINDOW_MIN = 5;
-const AVATAR_URL_RE = /^\/storage\/v1\/object\/public\/review-avatars\/.+$/;
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
@@ -19,46 +17,6 @@ function isNonEmptyString(value: unknown): value is string {
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= MAX_EMAIL_LENGTH;
-}
-
-function gravatarUrl(email: string): string {
-  const normalized = email.trim().toLowerCase();
-  const hash = crypto.createHash("md5").update(normalized).digest("hex");
-  return `https://www.gravatar.com/avatar/${hash}?d=404&s=96`;
-}
-
-function isValidAvatarUrl(value: string): boolean {
-  try {
-    const u = new URL(value);
-    return (
-      u.hostname.endsWith(".supabase.co") &&
-      AVATAR_URL_RE.test(u.pathname)
-    );
-  } catch {
-    return false;
-  }
-}
-
-function toPublic(row: {
-  id: string;
-  customer_name: string;
-  rating: number;
-  review_text: string;
-  customer_avatar: string | null;
-  email: string | null;
-  created_at: string;
-}): PublicReview {
-  // Email is intentionally NOT returned. It is only used server-side
-  // to derive a Gravatar hash (which exposes no raw email address).
-  const avatar = row.customer_avatar || (row.email ? gravatarUrl(row.email) : null) || null;
-  return {
-    id: row.id,
-    name: row.customer_name,
-    rating: row.rating,
-    review: row.review_text,
-    avatar_url: avatar,
-    created_at: row.created_at,
-  };
 }
 
 export async function POST(request: Request) {
@@ -83,10 +41,18 @@ export async function POST(request: Request) {
   if (name.length > MAX_NAME_LENGTH) {
     return NextResponse.json({ success: false, error: "Name is too long." }, { status: 400 });
   }
-  if (emailRaw !== "") {
-    if (!isValidEmail(emailRaw.trim().toLowerCase())) {
-      return NextResponse.json({ success: false, error: "Please enter a valid email address." }, { status: 400 });
-    }
+  const emailTrimmed = emailRaw.trim().toLowerCase();
+  if (!emailTrimmed) {
+    return NextResponse.json(
+      { success: false, error: "Please enter your email address." },
+      { status: 400 }
+    );
+  }
+  if (!isValidEmail(emailTrimmed)) {
+    return NextResponse.json(
+      { success: false, error: "Please enter a valid email address." },
+      { status: 400 }
+    );
   }
   if (typeof rating !== "number" || !Number.isInteger(rating) || rating < RATING_MIN || rating > RATING_MAX) {
     return NextResponse.json({ success: false, error: "Please select a rating between 1 and 5." }, { status: 400 });
@@ -98,7 +64,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "Review is too long." }, { status: 400 });
   }
 
-  const cleanEmail = emailRaw.trim().toLowerCase() || null;
+  const cleanEmail = emailTrimmed;
   const avatarUrl = avatarRaw && isValidAvatarUrl(avatarRaw) ? avatarRaw : null;
   const now = new Date().toISOString();
 
@@ -115,15 +81,12 @@ export async function POST(request: Request) {
       .eq("customer_name", name)
       .eq("rating", rating)
       .eq("review_text", review)
-      .gte("created_at", windowAgo)
+       .gte("created_at", windowAgo)
       .order("created_at", { ascending: false })
       .limit(1);
-    // Match email exactly (NULL when email is optional and not provided).
-    if (cleanEmail) {
-      dedupeQuery = dedupeQuery.eq("email", cleanEmail);
-    } else {
-      dedupeQuery = dedupeQuery.is("email", null);
-    }
+    // Email is required on this form, so match it exactly (prevents duplicate
+    // submissions of the same review within the dedupe window).
+    dedupeQuery = dedupeQuery.eq("email", cleanEmail);
 
     const { data: existing, error: dupErr } = await dedupeQuery.maybeSingle();
 
@@ -180,31 +143,20 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const limit = Math.min(Math.max(1, parseInt(searchParams.get("limit") || "12", 10)), 50);
 
-  try {
-    const { data, error } = await supabaseAdmin
-      .from("reviews")
-      .select("id,customer_name,rating,review_text,customer_avatar,email,created_at")
-      .eq("status", "approved")
-      .order("created_at", { ascending: false })
-      .limit(limit);
+  const { reviews, averageRating, totalReviews, error } =
+    await getPublicReviews(limit);
 
-    if (error) {
-      console.error("Reviews fetch error:", error.message);
-      return NextResponse.json({ success: false, error: "Unable to load reviews." }, { status: 500 });
-    }
-
-    const reviews = (data || []).map(toPublic);
-    const total = reviews.length;
-    const average = total > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / total : 0;
-
-    return NextResponse.json({
-      success: true,
-      reviews,
-      averageRating: Math.round(average * 10) / 10,
-      totalReviews: total,
-    });
-  } catch (err) {
-    console.error("Reviews fetch exception:", err);
-    return NextResponse.json({ success: false, error: "Unable to load reviews." }, { status: 500 });
+  if (error) {
+    return NextResponse.json(
+      { success: false, error: "Unable to load reviews." },
+      { status: 500 }
+    );
   }
+
+  return NextResponse.json({
+    success: true,
+    reviews,
+    averageRating,
+    totalReviews,
+  });
 }
