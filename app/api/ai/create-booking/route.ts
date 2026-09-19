@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { isValidPhoneNumber } from "libphonenumber-js";
 import {
   sendBookingWhatsAppNotification,
   BookingRecord,
@@ -30,7 +31,7 @@ function isValidEmail(value: string): boolean {
 }
 
 function isValidPhone(value: string): boolean {
-  return /^[\d\s+\-()]{10,15}$/.test(value);
+  return isValidPhoneNumber(value);
 }
 
 function isValidISODate(value: string): boolean {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 const ALLOWED_SERVICE_TYPES = ["chauffeur", "self-drive"] as const;
 
@@ -12,7 +13,7 @@ function isValidEmail(value: string): boolean {
 }
 
 function isValidPhone(value: string): boolean {
-  return /^[\d\s+\-()]{10,15}$/.test(value);
+  return isValidPhoneNumber(value);
 }
 
 function isValidISODate(value: string): boolean {

@@ -7,23 +7,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Phone, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { LanguageSelector } from '@/components/ui/language-selector';
 import { CONTACT, whatsappLink, telLink } from '@/lib/data/contact';
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/layout/logo';
+import { t } from '@/lib/i18n/dictionary';
+import { useLocale } from '@/lib/i18n/client';
+import type { Locale } from '@/lib/i18n/types';
 
-const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/fleet', label: 'Fleet' },
-  { href: '/destinations', label: 'Destinations' },
-  { href: '/reviews', label: 'Reviews' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/#chauffeurs', label: 'Chauffeurs' },
-  { href: '/about', label: 'About Us' },
-  { href: '/contact', label: 'Contact Us' },
-];
+const NAV_KEYS = [
+  { href: '/', key: 'nav.home' },
+  { href: '/fleet', key: 'nav.fleet' },
+  { href: '/destinations', key: 'nav.destinations' },
+  { href: '/reviews', key: 'nav.reviews' },
+  { href: '/blog', key: 'nav.blog' },
+  { href: '/#chauffeurs', key: 'nav.chauffeurs' },
+  { href: '/about', key: 'nav.about' },
+  { href: '/contact', key: 'nav.contact' },
+] as const;
 
 export function Navbar() {
   const pathname = usePathname();
+  const locale = useLocale() as Locale;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -53,7 +58,7 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
+            {NAV_KEYS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -64,9 +69,10 @@ export function Navbar() {
                      : 'text-foreground/75 hover:text-red-600'
                  )}
               >
-                {link.label}
+                {t(link.key, { locale })}
               </Link>
             ))}
+            <LanguageSelector />
           </div>
 
           {/* Right actions */}
@@ -79,24 +85,24 @@ export function Navbar() {
               {CONTACT.phoneDisplay}
             </a>
             <a
-              href={whatsappLink('Hello Rentora Mobility, I would like to book a car.')}
+              href={whatsappLink(t('common.whatsAppBookCar', { locale }))}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex items-center gap-2 rounded-full bg-[#25D366] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity"
             >
               <MessageCircle className="h-4 w-4" />
-              <span className="hidden md:inline">WhatsApp</span>
+              <span className="hidden md:inline">{t('common.whatsApp', { locale })}</span>
             </a>
             <ThemeToggle />
             <Link href="/fleet" className="hidden sm:block">
-              <Button className="btn-gold rounded-full text-sm">Book Now</Button>
+              <Button className="btn-gold rounded-full text-sm">{t('nav.bookNow', { locale })}</Button>
             </Link>
             <Button
               variant="ghost"
               size="icon"
               className="lg:hidden"
               onClick={() => setMobileOpen(true)}
-              aria-label="Open menu"
+               aria-label={t('nav.openMenu', { locale })}
             >
               <Menu className="h-6 w-6" />
             </Button>
@@ -123,12 +129,12 @@ export function Navbar() {
             >
               <div className="flex items-center justify-between mb-8">
                 <Logo />
-                <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)} aria-label="Close menu">
+                <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)} aria-label={t('nav.closeMenu', { locale })}>
                   <X className="h-6 w-6" />
                 </Button>
               </div>
               <div className="flex flex-col gap-1">
-                {NAV_LINKS.map((link) => (
+                {NAV_KEYS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -137,7 +143,7 @@ export function Navbar() {
                        isActive(link.href) ? 'bg-red-600/10 text-red-600' : 'hover:bg-muted hover:text-red-600'
                      )}
                   >
-                    {link.label}
+                    {t(link.key, { locale })}
                   </Link>
                 ))}
               </div>
@@ -146,15 +152,15 @@ export function Navbar() {
                   <Phone className="h-4 w-4" /> {CONTACT.phoneDisplay}
                 </a>
                 <a
-                  href={whatsappLink('Hello Rentora Mobility, I would like to book a car.')}
+                  href={whatsappLink(t('common.whatsAppBookCar', { locale }))}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white"
                 >
-                  <MessageCircle className="h-4 w-4" /> WhatsApp Us
+                  <MessageCircle className="h-4 w-4" /> {t('common.whatsApp', { locale })}
                 </a>
                 <Link href="/fleet">
-                  <Button className="btn-gold w-full rounded-full">Book Now</Button>
+                  <Button className="btn-gold w-full rounded-full">{t('nav.bookNow', { locale })}</Button>
                 </Link>
               </div>
             </motion.div>

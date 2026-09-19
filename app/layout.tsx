@@ -6,6 +6,8 @@ import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { StructuredData } from '@/components/seo/structured-data';
 import { LazyGlobals } from '@/components/layout/lazy-globals';
+import { getLocale } from '@/lib/i18n/locale';
+import { isRtl } from '@/lib/i18n/dictionary';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -78,8 +80,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const locale = getLocale();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={isRtl(locale) ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <head>
         <meta name="color-scheme" content="light" />
         <link rel="manifest" href="/manifest.json" />

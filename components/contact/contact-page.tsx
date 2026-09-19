@@ -6,11 +6,15 @@ import { Phone, Mail, MessageCircle, MapPin, Clock, Send, CheckCircle2, AlertCir
 import { Button } from '@/components/ui/button';
 import { SectionHeading } from '@/components/ui/section-heading';
 import { CONTACT, whatsappLink, telLink, mailtoLink } from '@/lib/data/contact';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import { t } from '@/lib/i18n/dictionary';
+import { useLocale } from '@/lib/i18n/client';
 import { cn } from '@/lib/utils';
 
 type FormState = 'idle' | 'submitting' | 'sent' | 'failed';
 
 export function ContactPage() {
+  const locale = useLocale();
   const [formState, setFormState] = React.useState<FormState>('idle');
   const [form, setForm] = React.useState({ name: '', email: '', phone: '', message: '' });
   const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -19,12 +23,12 @@ export function ContactPage() {
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!form.name.trim()) errs.name = 'Name is required';
-    if (!form.email.trim()) errs.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errs.email = 'Enter a valid email address';
-    if (!form.phone.trim()) errs.phone = 'Phone number is required';
-    else if (!/^[\d\s+-]{10,15}$/.test(form.phone.trim())) errs.phone = 'Enter a valid phone number';
-    if (!form.message.trim()) errs.message = 'Message is required';
+    if (!form.name.trim()) errs.name = t('contact.nameError', { locale });
+    if (!form.email.trim()) errs.email = t('contact.emailRequired', { locale });
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errs.email = t('contact.emailError', { locale });
+    if (!form.phone.trim()) errs.phone = t('contact.phoneRequired', { locale });
+    else if (!isValidPhoneNumber(form.phone.trim())) errs.phone = t('contact.phoneError', { locale });
+    if (!form.message.trim()) errs.message = t('contact.messageError', { locale });
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -78,7 +82,7 @@ export function ContactPage() {
   const contactCards = [
     {
       icon: Phone,
-      label: 'Call Us',
+      label: t('contact.contactCards.call', { locale }),
       value: CONTACT.phoneDisplay,
       href: telLink(),
       color: 'text-gold',
@@ -86,7 +90,7 @@ export function ContactPage() {
     },
     {
       icon: MessageCircle,
-      label: 'WhatsApp',
+      label: t('contact.contactCards.whatsApp', { locale }),
       value: CONTACT.whatsappDisplay,
       href: whatsappLink('Hello Rentora Mobility'),
       color: 'text-[#25D366]',
@@ -94,7 +98,7 @@ export function ContactPage() {
     },
     {
       icon: Mail,
-      label: 'Email',
+      label: t('contact.contactCards.emailL', { locale }),
       value: CONTACT.email,
       secondary: '',
       href: mailtoLink('Enquiry from ' + (form.name || 'Customer')),
@@ -104,9 +108,9 @@ export function ContactPage() {
     },
     {
       icon: Headset,
-      label: '24/7 Support',
-      value: 'We respond fast',
-      secondary: 'Call · WhatsApp · Email',
+      label: t('contact.contactCards.support', { locale }),
+      value: t('contact.contactCards.supportValue', { locale }),
+      secondary: t('contact.contactCards.supportSecondary', { locale }),
       href: '',
       secondaryHref: '',
       color: 'text-foreground',
@@ -114,7 +118,7 @@ export function ContactPage() {
     },
     {
       icon: MapPin,
-      label: 'Registered Office',
+      label: t('contact.contactCards.office', { locale }),
       value: CONTACT.address,
       secondary: '',
       href: '',
@@ -134,9 +138,9 @@ export function ContactPage() {
     <div className="pt-28 pb-20">
       <div className="container-lux px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Get in Touch"
-          title="Contact Rentora Mobility"
-          subtitle="Available 24/7 for bookings, queries and support. Call, WhatsApp, or email us — or send a message below."
+          eyebrow={t('contact.getInTouch', { locale })}
+          title={t('contact.contactTitle', { locale })}
+          subtitle={t('contact.contactSubtitle', { locale })}
         />
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12 mb-12">
@@ -189,22 +193,22 @@ export function ContactPage() {
                 <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-green-500/10 text-green-600 mb-4" aria-hidden="true">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
-                <h4 className="font-display text-xl font-bold mb-2">Message Ready in WhatsApp</h4>
+                <h4 className="font-display text-xl font-bold mb-2">{t('contact.sentTitle', { locale })}</h4>
                 <p className="text-sm text-muted-foreground mt-2 mb-6">
-                  We&apos;ve opened WhatsApp with your message pre-filled. Please press send there and our team will respond shortly. If WhatsApp did not open, use the options below.
+                  {t('contact.sentBody', { locale })}
                 </p>
                 <div className="flex flex-col gap-3">
                   <Button
                     onClick={() => window.open(whatsappLink(buildMessage()), '_blank', 'noopener,noreferrer')}
                     className="btn-gold w-full rounded-xl h-12"
                   >
-                    <MessageCircle className="h-4 w-4 mr-2" /> Open WhatsApp Again
+                    <MessageCircle className="h-4 w-4 mr-2" /> {t('contact.openWhatsAppAgain', { locale })}
                   </Button>
                   <Button onClick={copyToClipboard} variant="outline" className="rounded-full">
-                    <Copy className="h-4 w-4 mr-2" /> {copied ? 'Copied!' : 'Copy Message'}
+                    <Copy className="h-4 w-4 mr-2" /> {copied ? t('contact.copied', { locale }) : t('contact.copyMessage', { locale })}
                   </Button>
                   <a href={mailtoLink('Enquiry from ' + (form.name || 'Customer'), buildMessage())} className="text-sm font-medium text-muted-foreground hover:text-gold transition-colors">
-                    Or send via Email
+                    {t('contact.orSendEmail', { locale })}
                   </a>
                   <Button onClick={reset} variant="link" className="text-sm">Send another message</Button>
                 </div>
@@ -214,38 +218,38 @@ export function ContactPage() {
                 <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-red-500/10 text-red-600 mb-4" aria-hidden="true">
                   <AlertCircle className="h-8 w-8" />
                 </div>
-                <h4 className="font-display text-xl font-bold mb-2">Could not Open WhatsApp</h4>
+                <h4 className="font-display text-xl font-bold mb-2">{t('contact.failedTitle', { locale })}</h4>
                 <p className="text-sm text-muted-foreground mt-2 mb-6 max-w-sm mx-auto">{submitError}</p>
                 <div className="flex flex-col gap-3">
                   <Button onClick={copyToClipboard} variant="outline" className="rounded-full">
-                    <Copy className="h-4 w-4 mr-2" /> {copied ? 'Copied!' : 'Copy Message'}
+                    <Copy className="h-4 w-4 mr-2" /> {copied ? t('contact.copied', { locale }) : t('contact.copyMessage', { locale })}
                   </Button>
                   <Button asChild>
-                    <a href={mailtoLink('Enquiry from ' + (form.name || 'Customer'), buildMessage())}>Send via Email</a>
+                    <a href={mailtoLink('Enquiry from ' + (form.name || 'Customer'), buildMessage())}>{t('contact.sendViaEmail', { locale })}</a>
                   </Button>
                   <a href={telLink()} className="text-sm font-medium text-muted-foreground hover:text-gold transition-colors">Call us at {CONTACT.phoneDisplay}</a>
-                  <Button onClick={reset} variant="link" className="text-sm">Back to form</Button>
+                  <Button onClick={reset} variant="link" className="text-sm">{t('contact.backToForm', { locale })}</Button>
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4" aria-label="Contact form" noValidate>
-                <div>
-                  <label htmlFor="name" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                    Full Name
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    required
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    aria-invalid={!!errors.name}
-                    aria-describedby={errors.name ? 'name-error' : undefined}
-                    className={inputCls(!!errors.name)}
-                    placeholder="Your full name"
-                  />
+               <form onSubmit={handleSubmit} className="space-y-4" aria-label={t('contact.submitButton', { locale })} noValidate>
+                 <div>
+                   <label htmlFor="name" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                     {t('contact.name', { locale })}
+                   </label>
+                   <input
+                     id="name"
+                     name="name"
+                     type="text"
+                     autoComplete="name"
+                     required
+                     value={form.name}
+                     onChange={(e) => setForm({ ...form, name: e.target.value })}
+                     aria-invalid={!!errors.name}
+                     aria-describedby={errors.name ? 'name-error' : undefined}
+                     className={inputCls(!!errors.name)}
+                     placeholder={t('contact.namePlaceholder', { locale })}
+                   />
                   {errors.name && (
                     <p id="name-error" className="text-xs text-red-500 mt-1 flex items-center gap-1" role="alert">
                       <AlertCircle className="h-3 w-3" />{errors.name}
@@ -255,22 +259,22 @@ export function ContactPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                      Email Address
-                    </label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? 'email-error' : undefined}
-                      className={inputCls(!!errors.email)}
-                      placeholder="you@email.com"
-                    />
+                   <label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                       {t('contact.email', { locale })}
+                     </label>
+                     <input
+                       id="email"
+                       name="email"
+                       type="email"
+                       autoComplete="email"
+                       required
+                       value={form.email}
+                       onChange={(e) => setForm({ ...form, email: e.target.value })}
+                       aria-invalid={!!errors.email}
+                       aria-describedby={errors.email ? 'email-error' : undefined}
+                       className={inputCls(!!errors.email)}
+                       placeholder={t('contact.emailPlaceholder', { locale })}
+                     />
                     {errors.email && (
                       <p id="email-error" className="text-xs text-red-500 mt-1 flex items-center gap-1" role="alert">
                         <AlertCircle className="h-3 w-3" />{errors.email}
@@ -278,22 +282,22 @@ export function ContactPage() {
                     )}
                   </div>
                   <div>
-                    <label htmlFor="phone" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                      Phone Number
-                    </label>
-                    <input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      autoComplete="tel"
-                      required
-                      value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      aria-invalid={!!errors.phone}
-                      aria-describedby={errors.phone ? 'phone-error' : undefined}
-                      className={inputCls(!!errors.phone)}
-                      placeholder="+91 XXXXXXXXXX"
-                    />
+                   <label htmlFor="phone" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                       {t('contact.phone', { locale })}
+                     </label>
+                     <input
+                       id="phone"
+                       name="phone"
+                       type="tel"
+                       autoComplete="tel"
+                       required
+                       value={form.phone}
+                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                       aria-invalid={!!errors.phone}
+                       aria-describedby={errors.phone ? 'phone-error' : undefined}
+                       className={inputCls(!!errors.phone)}
+                       placeholder={t('contact.phonePlaceholder', { locale })}
+                     />
                     {errors.phone && (
                       <p id="phone-error" className="text-xs text-red-500 mt-1 flex items-center gap-1" role="alert">
                         <AlertCircle className="h-3 w-3" />{errors.phone}
@@ -303,21 +307,21 @@ export function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    required
-                    rows={4}
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    aria-invalid={!!errors.message}
-                    aria-describedby={errors.message ? 'message-error' : undefined}
-                    className={inputCls(!!errors.message)}
-                    placeholder="Tell us about your travel needs..."
-                  />
+                   <label htmlFor="message" className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                       {t('contact.message', { locale })}
+                     </label>
+                     <textarea
+                       id="message"
+                       name="message"
+                       required
+                       rows={4}
+                       value={form.message}
+                       onChange={(e) => setForm({ ...form, message: e.target.value })}
+                       aria-invalid={!!errors.message}
+                       aria-describedby={errors.message ? 'message-error' : undefined}
+                        className={inputCls(!!errors.message)}
+                        placeholder={t('contact.messagePlaceholder', { locale })}
+                   />
                   {errors.message && (
                     <p id="message-error" className="text-xs text-red-500 mt-1 flex items-center gap-1" role="alert">
                       <AlertCircle className="h-3 w-3" />{errors.message}
@@ -325,16 +329,16 @@ export function ContactPage() {
                   )}
                 </div>
 
-                <Button type="submit" disabled={formState === 'submitting'} className="btn-gold w-full rounded-xl h-12" aria-busy={formState === 'submitting'}>
-                  {formState === 'submitting' ? (
-                    <>
-                      <Send className="h-4 w-4 mr-2" /> Opening WhatsApp...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" /> Send via WhatsApp
-                    </>
-                  )}
+                 <Button type="submit" disabled={formState === 'submitting'} className="btn-gold w-full rounded-xl h-12" aria-busy={formState === 'submitting'}>
+                   {formState === 'submitting' ? (
+                     <>
+                       <Send className="h-4 w-4 mr-2" /> {t('contact.submitting', { locale })}
+                     </>
+                   ) : (
+                     <>
+                       <Send className="h-4 w-4 mr-2" /> {t('contact.submitButton', { locale })}
+                     </>
+                   )}
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">

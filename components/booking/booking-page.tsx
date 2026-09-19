@@ -12,6 +12,9 @@ import { CONTACT, whatsappLink } from '@/lib/data/contact';
 import { getCarBySlug, getRelatedCars, type Car } from '@/lib/data/cars';
 import { VehicleTariffSheet } from '@/components/tariff/tariff-sheet';
 import { isChauffeurServiceType, type ServiceTypeKey } from '@/lib/data/tariffs';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import { t } from '@/lib/i18n/dictionary';
+import { useLocale } from '@/lib/i18n/client';
 import { cn } from '@/lib/utils';
 
 const TIMES = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
@@ -48,6 +51,7 @@ function formatDisplayTime(timeValue: string): string {
 
 export default function BookingPage({ params }: { params: { slug: string } }) {
   const searchParams = useSearchParams();
+  const locale = useLocale();
   const car = getCarBySlug(params.slug);
   const related = car ? getRelatedCars(car) : [];
 
@@ -84,9 +88,9 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="font-display text-2xl font-bold mb-2">Car Not Found</h1>
-          <p className="text-muted-foreground mb-4">The vehicle you are trying to book does not exist.</p>
-          <a href="/fleet"><Button className="btn-gold rounded-full">Back to Fleet</Button></a>
+         <h1 className="font-display text-2xl font-bold mb-2">{t('booking.noCar', { locale })}</h1>
+          <p className="text-muted-foreground mb-4">{t('booking.noCarText', { locale })}</p>
+          <a href="/fleet"><Button className="btn-gold rounded-full">{t('booking.backToFleet', { locale })}</Button></a>
         </div>
       </div>
     );
@@ -102,25 +106,25 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
-    if (!customerName.trim()) errs.customerName = 'Full name is required';
-    if (!phone.trim()) errs.phone = 'Phone number is required';
-    else if (!/^[\d\s+-]{10,15}$/.test(phone.trim())) errs.phone = 'Enter a valid phone number';
-    if (!email.trim()) errs.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = 'Enter a valid email address';
-    if (!pickupCity) errs.pickupCity = 'Pickup location is required';
-    if (!dropCity) errs.dropCity = 'Drop-off location is required';
-    if (!pickupDate) errs.pickupDate = 'Pickup date is required';
-    if (!dropDate) errs.dropDate = 'Return date is required';
+    if (!customerName.trim()) errs.customerName = t('booking.nameError', { locale });
+    if (!phone.trim()) errs.phone = t('booking.phoneRequired', { locale });
+    else if (!isValidPhoneNumber(phone.trim())) errs.phone = t('booking.phoneError', { locale });
+    if (!email.trim()) errs.email = t('booking.emailRequired', { locale });
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = t('booking.emailError', { locale });
+    if (!pickupCity) errs.pickupCity = t('booking.pickupRequired', { locale });
+    if (!dropCity) errs.dropCity = t('booking.dropoffRequired', { locale });
+    if (!pickupDate) errs.pickupDate = t('booking.pickupDateRequired', { locale });
+    if (!dropDate) errs.dropDate = t('booking.returnDateRequired', { locale });
     if (pickupDate && dropDate) {
       const d1 = new Date(pickupDate);
       const d2 = new Date(dropDate);
       const todayStart = new Date(today);
       todayStart.setHours(0, 0, 0, 0);
-      if (d1 < todayStart) errs.pickupDate = 'Pickup date cannot be in the past';
-      if (d2 < d1) errs.dropDate = 'Return date cannot be before pickup date';
-      if (d1.getTime() === d2.getTime() && dropTime <= pickupTime) errs.dropTime = 'Return time must be later than pickup time';
+      if (d1 < todayStart) errs.pickupDate = t('booking.pickupPast', { locale });
+      if (d2 < d1) errs.dropDate = t('booking.returnBeforePickup', { locale });
+      if (d1.getTime() === d2.getTime() && dropTime <= pickupTime) errs.dropTime = t('booking.returnAfterPickupTime', { locale });
     }
-    if (!serviceType) errs.serviceType = 'Please select a service type';
+    if (!serviceType) errs.serviceType = t('booking.serviceTypeRequired', { locale });
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -209,37 +213,37 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
             <div className="flex h-20 w-20 mx-auto items-center justify-center rounded-full bg-green-500/10 text-green-600 mb-6">
               <CheckCircle2 className="h-10 w-10" />
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">Booking Confirmed!</h1>
-            <p className="text-muted-foreground mb-8">Your booking request has been received. Our team will confirm shortly.</p>
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">{t('booking.confirmedTitle', { locale })}</h1>
+            <p className="text-muted-foreground mb-8">{t('booking.confirmedBody', { locale })}</p>
 
             <div className="rounded-2xl border border-border bg-muted/30 p-6 space-y-3 text-sm text-left mb-8">
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Booking Reference</span>
+                <span className="text-muted-foreground">{t('booking.bookingReference', { locale })}</span>
                 <span className="font-semibold text-gold">{bookingRef}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Vehicle</span>
+                <span className="text-muted-foreground">{t('booking.vehicle', { locale })}</span>
                 <span className="font-semibold">{car.name}</span>
               </div>
               <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Service</span>
-                  <span className="font-semibold">{SERVICE_TYPE_LABELS[serviceType] ?? 'Self-drive'}</span>
+                <span className="text-muted-foreground">{t('booking.service', { locale })}</span>
+                <span className="font-semibold">{SERVICE_TYPE_LABELS[serviceType] ?? 'Self-drive'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Pickup</span>
+                <span className="text-muted-foreground">{t('booking.pickup', { locale })}</span>
                 <span className="font-semibold">{pickupCity} · {formatDisplayDate(pickupDate)} · {formatDisplayTime(pickupTime)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Return</span>
+                <span className="text-muted-foreground">{t('booking.return', { locale })}</span>
                 <span className="font-semibold">{dropCity} · {formatDisplayDate(dropDate)} · {formatDisplayTime(dropTime)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Duration</span>
+                <span className="text-muted-foreground">{t('booking.duration', { locale })}</span>
                 <span className="font-semibold">{days} day{days > 1 ? 's' : ''}</span>
               </div>
               <div className="border-t border-border pt-3 mt-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Estimated Total</span>
+                  <span className="text-muted-foreground">{t('booking.estimatedTotal', { locale })}</span>
                   <span className="font-bold text-lg text-gold">₹{total.toFixed(0)}</span>
                 </div>
               </div>
@@ -248,23 +252,23 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
             <div className="flex flex-col sm:flex-row gap-3">
               <a href={whatsappLink(`Hello, I have booked ${car.name}. Booking ref: ${bookingRef}. Pickup: ${pickupCity} on ${pickupDate} at ${pickupTime}.`)} target="_blank" rel="noopener noreferrer" aria-label="Confirm booking via WhatsApp" className="flex-1">
                 <Button className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white rounded-full">
-                  <MessageCircle className="h-4 w-4 mr-2" /> Confirm via WhatsApp
-                </Button>
-              </a>
-              <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} aria-label="Call Rentora Mobility to confirm" className="flex-1">
-                <Button variant="outline" className="w-full rounded-full">
-                  <Phone className="h-4 w-4 mr-2" /> Call Rentora
-                </Button>
-              </a>
-            </div>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-              <a href="/fleet" aria-label="Browse more cars in our fleet" className="flex-1">
-                <Button variant="ghost" className="w-full rounded-full">Browse Fleet</Button>
-              </a>
-              <a href="/contact" aria-label="Contact Rentora Mobility" className="flex-1">
-                <Button variant="outline" className="w-full rounded-full">Contact Us</Button>
-              </a>
-            </div>
+                <MessageCircle className="h-4 w-4 mr-2" /> {t('ai.confirmWhatsApp', { locale })}
+                 </Button>
+               </a>
+               <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} aria-label="Call Rentora Mobility to confirm" className="flex-1">
+                 <Button variant="outline" className="w-full rounded-full">
+                   <Phone className="h-4 w-4 mr-2" /> {t('booking.callRentora', { locale })}
+                 </Button>
+               </a>
+             </div>
+             <div className="mt-6 flex flex-col sm:flex-row gap-3">
+               <a href="/fleet" aria-label="Browse more cars in our fleet" className="flex-1">
+                 <Button variant="ghost" className="w-full rounded-full">{t('booking.browseFleet', { locale })}</Button>
+               </a>
+               <a href="/contact" aria-label="Contact Rentora Mobility" className="flex-1">
+                 <Button variant="outline" className="w-full rounded-full">{t('nav.contact', { locale })}</Button>
+               </a>
+             </div>
           </motion.div>
         </div>
       </div>
@@ -276,11 +280,11 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
       <div className="container-lux px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <a href="/" className="hover:text-gold transition-colors">Home</a>
+          <a href="/" className="hover:text-gold transition-colors">{t('nav.home', { locale })}</a>
           <ChevronRight className="h-3 w-3" />
-          <a href="/fleet" className="hover:text-gold transition-colors">Fleet</a>
+          <a href="/fleet" className="hover:text-gold transition-colors">{t('nav.fleet', { locale })}</a>
           <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground">Book {car.name}</span>
+          <span className="text-foreground">{t('booking.bookCar', { locale, vars: { car: car.name } })}</span>
         </div>
 
         <div className="grid lg:grid-cols-[1fr_380px] gap-8">
@@ -289,80 +293,78 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
             <form onSubmit={handleSubmit} className="luxury-card p-6 md:p-8 mb-6">
               <div className="flex items-center gap-2 text-gold mb-3">
                 <CheckCircle2 className="h-4 w-4" />
-                <span className="text-xs font-semibold uppercase tracking-[0.25em]">Reservation Request</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.25em]">{t('booking.reservationRequest', { locale })}</span>
               </div>
-              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight mb-1">Book {car.name}</h1>
-              <p className="text-sm text-muted-foreground mb-8">Complete the form below and our team will confirm your booking.</p>
+              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight mb-1">{t('booking.bookCar', { locale, vars: { car: car.name } })}</h1>
+              <p className="text-sm text-muted-foreground mb-8">{t('booking.completeForm', { locale })}</p>
 
-              {/* Customer Information */}
               <fieldset className="space-y-5 mb-8">
-                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Customer Information</legend>
+                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('booking.customerInfo', { locale })}</legend>
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="customerName" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <User className="h-3.5 w-3.5 text-gold" /> Full Name
+                      <User className="h-3.5 w-3.5 text-gold" /> {t('booking.fullName', { locale })}
                     </label>
-                    <input id="customerName" type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.customerName ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-gold')} placeholder="Enter your full name" />
+                    <input id="customerName" type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.customerName ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-gold')} placeholder={t('booking.fullNamePlaceholder', { locale })} />
                     {errors.customerName && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.customerName}</p>}
                   </div>
                   <div>
                     <label htmlFor="phone" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <Phone className="h-3.5 w-3.5 text-gold" /> Phone Number
+                      <Phone className="h-3.5 w-3.5 text-gold" /> {t('booking.phone', { locale })}
                     </label>
-                    <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.phone ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-gold')} placeholder="+91 98765 43210" />
+                    <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.phone ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-gold')} placeholder={t('booking.phonePlaceholder', { locale })} />
                     {errors.phone && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.phone}</p>}
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="email" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <Mail className="h-3.5 w-3.5 text-gold" /> Email Address
+                      <Mail className="h-3.5 w-3.5 text-gold" /> {t('booking.email', { locale })}
                     </label>
-                    <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.email ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-gold')} placeholder="you@example.com" />
+                    <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.email ? 'border-red-500 focus:border-red-500' : 'border-border focus:border-gold')} placeholder={t('booking.emailPlaceholder', { locale })} />
                     {errors.email && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.email}</p>}
                   </div>
                 </div>
               </fieldset>
 
-              {/* Trip Information */}
-              <fieldset className="space-y-5 mb-8">
-                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Trip Information</legend>
+               <fieldset className="space-y-5 mb-8">
+                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('booking.tripInfo', { locale })}</legend>
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="pickupCity" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <MapPin className="h-3.5 w-3.5 text-gold" /> Pickup Location
+                      <MapPin className="h-3.5 w-3.5 text-gold" /> {t('booking.pickupLocation', { locale })}
                     </label>
                     <select id="pickupCity" value={pickupCity} onChange={(e) => { setPickupCity(e.target.value); setAvailability(null); }} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.pickupCity ? 'border-red-500' : 'border-border focus:border-gold')}>
-                      <option value="">Select city</option>
+                      <option value="">{t('booking.selectCity', { locale })}</option>
                       {CITIES.map((c) => <option key={c.slug} value={c.name}>{c.name}</option>)}
                     </select>
                     {errors.pickupCity && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.pickupCity}</p>}
                   </div>
                   <div>
                     <label htmlFor="dropCity" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <MapPin className="h-3.5 w-3.5 text-gold" /> Drop-off Location
+                      <MapPin className="h-3.5 w-3.5 text-gold" /> {t('booking.dropoffLocation', { locale })}
                     </label>
                     <select id="dropCity" value={dropCity} onChange={(e) => { setDropCity(e.target.value); setAvailability(null); }} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.dropCity ? 'border-red-500' : 'border-border focus:border-gold')}>
-                      <option value="">Select city</option>
+                      <option value="">{t('booking.selectCity', { locale })}</option>
                       {CITIES.map((c) => <option key={c.slug} value={c.name}>{c.name}</option>)}
                     </select>
                     {errors.dropCity && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.dropCity}</p>}
                   </div>
                   <div>
                     <label htmlFor="pickupDate" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <Calendar className="h-3.5 w-3.5 text-gold" /> Pickup Date
+                      <Calendar className="h-3.5 w-3.5 text-gold" /> {t('booking.pickupDate', { locale })}
                     </label>
                     <input id="pickupDate" type="date" min={today} value={pickupDate} onChange={(e) => { setPickupDate(e.target.value); setAvailability(null); }} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.pickupDate ? 'border-red-500' : 'border-border focus:border-gold')} />
                     {errors.pickupDate && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.pickupDate}</p>}
                   </div>
                   <div>
                     <label htmlFor="dropDate" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <Calendar className="h-3.5 w-3.5 text-gold" /> Return Date
+                      <Calendar className="h-3.5 w-3.5 text-gold" /> {t('booking.returnDate', { locale })}
                     </label>
                     <input id="dropDate" type="date" min={pickupDate || today} value={dropDate} onChange={(e) => { setDropDate(e.target.value); setAvailability(null); }} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.dropDate ? 'border-red-500' : 'border-border focus:border-gold')} />
                     {errors.dropDate && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.dropDate}</p>}
                   </div>
                   <div>
                     <label htmlFor="pickupTime" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <Clock className="h-3.5 w-3.5 text-gold" /> Pickup Time
+                      <Clock className="h-3.5 w-3.5 text-gold" /> {t('booking.pickupTime', { locale })}
                     </label>
                     <select id="pickupTime" value={pickupTime} onChange={(e) => { setPickupTime(e.target.value); setAvailability(null); }} className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-gold transition-colors">
                       {TIMES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -370,7 +372,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                   </div>
                   <div>
                     <label htmlFor="dropTime" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                      <Clock className="h-3.5 w-3.5 text-gold" /> Return Time
+                      <Clock className="h-3.5 w-3.5 text-gold" /> {t('booking.returnTime', { locale })}
                     </label>
                     <select id="dropTime" value={dropTime} onChange={(e) => { setDropTime(e.target.value); setAvailability(null); }} className={cn('w-full rounded-xl border bg-background px-4 py-3 text-sm outline-none transition-colors', errors.dropTime ? 'border-red-500' : 'border-border focus:border-gold')}>
                       {TIMES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -382,9 +384,9 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
 
               {/* Service Type */}
               <fieldset className="space-y-4 mb-8">
-                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">Service Type</legend>
+                <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">{t('booking.serviceType', { locale })}</legend>
                 {errors.serviceType && <p className="text-xs text-red-500 mb-2 flex items-center gap-1"><AlertCircle className="h-3 w-3" />{errors.serviceType}</p>}
-                <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Service Type">
+                <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-label={t('booking.serviceType', { locale })}>
                   {SERVICE_TYPES.map((svc) => {
                     const available = svc.key === 'self-drive' ? car.selfDrive : car.chauffeurAvailable;
                     return (
@@ -403,7 +405,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                       >
                         <span>{svc.label}</span>
                         <span className="text-[10px] text-muted-foreground normal-case">{svc.description}</span>
-                        {!available && <span className="text-[10px] text-muted-foreground">(Unavailable)</span>}
+                        {!available && <span className="text-[10px] text-muted-foreground">({t('booking.notAvailable', { locale })})</span>}
                       </button>
                     );
                   })}
@@ -412,18 +414,17 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
 
               {/* Special Requirements */}
               <div className="mb-8">
-                <label htmlFor="specialRequirements" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
-                  <Tag className="h-3.5 w-3.5 text-gold" /> Special Requirements <span className="text-muted-foreground">(optional)</span>
-                </label>
-                <textarea id="specialRequirements" value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} rows={3} className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-gold transition-colors resize-none" placeholder="Any special requests..." />
+                 <label htmlFor="specialRequirements" className="text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-2">
+                   <Tag className="h-3.5 w-3.5 text-gold" /> {t('booking.specialRequirements', { locale })} <span className="text-muted-foreground">({t('common.optional', { locale })})</span>
+                 </label>
+                 <textarea id="specialRequirements" value={specialRequirements} onChange={(e) => setSpecialRequirements(e.target.value)} rows={3} className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-gold transition-colors resize-none" placeholder={t('booking.specialRequirementsPlaceholder', { locale })} />
               </div>
 
-              {/* Submit Error */}
               {submitError && (
                 <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold mb-1">Booking failed</p>
+                    <p className="font-semibold mb-1">{t('booking.bookingFailed', { locale })}</p>
                     <p>{submitError}</p>
                   </div>
                 </div>
@@ -443,7 +444,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
               {checkingAvailability && (
                 <div className="mb-6 rounded-xl border border-border bg-muted/30 p-4 text-sm flex items-center gap-3">
                   <Loader2 className="h-5 w-5 animate-spin text-gold" />
-                  <span>Checking availability...</span>
+                  <span>{t('booking.checkingAvailability', { locale })}</span>
                 </div>
               )}
 
@@ -451,17 +452,17 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
               <Button type="submit" disabled={submitting || checkingAvailability} className="btn-gold w-full rounded-full h-12 text-base group">
                 {submitting ? (
                   <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" /> Submitting...
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t('booking.submitting', { locale })}
                   </>
                 ) : (
                   <>
-                    Book Now · ₹{total.toFixed(0)}
+                    {t('nav.bookNow', { locale })} · ₹{total.toFixed(0)}
                     <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                   </>
                 )}
               </Button>
               {!pickupCity && !dropCity && !pickupDate && !dropDate && (
-                <p className="text-xs text-center text-muted-foreground mt-2">Select cities and dates to enable booking</p>
+                <p className="text-xs text-center text-muted-foreground mt-2">{t('booking.enableBooking', { locale })}</p>
               )}
             </form>
           </motion.div>
@@ -471,7 +472,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
             <div className="lg:sticky lg:top-28 space-y-6">
               {/* Car Summary */}
               <div className="luxury-card p-6">
-                <h3 className="font-display text-lg font-bold mb-4">Booking Summary</h3>
+                <h3 className="font-display text-lg font-bold mb-4">{t('booking.summary.bookingSummary', { locale })}</h3>
                 <div className="flex gap-4 mb-5">
                   <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0">
                     <img src={car.image} alt={car.name} className="h-full w-full object-cover" />
@@ -484,25 +485,25 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                 </div>
                 <div className="space-y-2.5 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Rate</span>
+                    <span className="text-muted-foreground">{t('booking.summary.rate', { locale })}</span>
                     <span className="font-semibold">₹{car.pricePerDay.toLocaleString('en-IN')}/day</span>
                   </div>
                   {car.pricePerHour && (
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Hourly Rate</span>
+                      <span className="text-muted-foreground">{t('booking.summary.hourlyRate', { locale })}</span>
                       <span className="font-semibold">₹{car.pricePerHour.toLocaleString('en-IN')}/hr</span>
                     </div>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Duration</span>
-                    <span className="font-semibold">{days > 0 ? `${days} day${days > 1 ? 's' : ''}` : 'Select dates'}</span>
+                    <span className="text-muted-foreground">{t('booking.summary.duration', { locale })}</span>
+                    <span className="font-semibold">{days > 0 ? `${days} day${days > 1 ? 's' : ''}` : t('booking.selectDates', { locale })}</span>
                   </div>
                 </div>
               </div>
 
               {/* Price Estimate */}
               <div className="luxury-card p-6">
-                <h3 className="font-display text-lg font-bold mb-4">Price Estimate</h3>
+                <h3 className="font-display text-lg font-bold mb-4">{t('booking.summary.priceEstimate', { locale })}</h3>
                 <div className="space-y-2.5 text-sm">
                   {days > 0 && (
                     <div className="flex items-center justify-between">
@@ -512,22 +513,22 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
                   )}
                   {isChauffeur && days > 0 && (
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Chauffeur charges</span>
+                      <span className="text-muted-foreground">{t('booking.summary.chauffeurCharges', { locale })}</span>
                       <span className="font-semibold">₹{chauffeurPrice.toLocaleString('en-IN')}</span>
                     </div>
                   )}
                     <div className="border-t border-border pt-3 mt-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Estimated Total</span>
+                        <span className="text-muted-foreground">{t('booking.summary.estimatedTotal', { locale })}</span>
                         <span className="font-bold text-lg text-gold">₹{total.toFixed(0)}</span>
                       </div>
-                      <p className="text-[10px] text-muted-foreground mt-1">Includes base rental and 5% GST</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">{t('booking.summary.includesGst', { locale })}</p>
                     </div>
 
                     {activeTariffCategory && (
                       <div className="border-t border-border pt-3 mt-3">
                         <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-muted-foreground mb-2">
-                          Applicable Tariff
+                          {t('booking.summary.applicableTariff', { locale })}
                         </div>
                         <VehicleTariffSheet car={car} activeCategory={activeTariffCategory} compact />
                       </div>
@@ -537,19 +538,19 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
 
               {/* Contact */}
               <div className="luxury-card p-6">
-                <h3 className="font-semibold mb-4">Need Help?</h3>
+                <h3 className="font-semibold mb-4">{t('booking.summary.needHelp', { locale })}</h3>
                 <div className="space-y-3">
                   <a href={whatsappLink(`Hello, I need help with a booking inquiry. Car: ${car.name}.`)} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Rentora Mobility for help" className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:border-gold/50 transition-colors focus-within:ring-2 focus-within:ring-gold">
                     <MessageCircle className="h-5 w-5 text-[#25D366]" />
                     <div>
-                      <div className="text-xs text-muted-foreground">WhatsApp</div>
-                      <div className="text-sm font-semibold">{CONTACT.whatsappDisplay}</div>
+                    <div className="text-xs text-muted-foreground">{t('common.whatsApp', { locale })}</div>
+                    <div className="text-sm font-semibold">{CONTACT.whatsappDisplay}</div>
                     </div>
                   </a>
                   <a href={`tel:${CONTACT.phone.replace(/\s/g, '')}`} aria-label="Call Rentora Mobility" className="flex items-center gap-3 rounded-xl border border-border p-3.5 hover:border-gold/50 transition-colors focus-within:ring-2 focus-within:ring-gold">
                     <Phone className="h-5 w-5 text-gold" />
                     <div>
-                      <div className="text-xs text-muted-foreground">Call us</div>
+                      <div className="text-xs text-muted-foreground">{t('booking.callUs', { locale })}</div>
                       <div className="text-sm font-semibold">{CONTACT.phoneDisplay}</div>
                     </div>
                   </a>
@@ -562,7 +563,7 @@ export default function BookingPage({ params }: { params: { slug: string } }) {
         {/* Related Cars */}
         {related.length > 0 && (
           <div className="mt-16">
-            <h2 className="font-display text-2xl font-bold mb-6">You May Also Like</h2>
+            <h2 className="font-display text-2xl font-bold mb-6">{t('booking.relatedHeading', { locale })}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {related.map((c, i) => <CarCard key={c.slug} car={c} index={i} />)}
             </div>
