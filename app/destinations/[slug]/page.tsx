@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowRight, Clock3, MapPinned, Compass, Hotel, UtensilsCrossed, CarFront, Fuel, BadgeCheck, Trees, ParkingCircle, SunMedium } from 'lucide-react';
+import { ArrowRight, Clock3, MapPinned, Compass, Hotel, UtensilsCrossed, CarFront, Fuel, BadgeCheck, Trees, ParkingCircle, SunMedium, Maximize2 } from 'lucide-react';
 import { getDestinationBySlug, getDestinationRecommendedCars, DESTINATIONS } from '@/lib/data/destinations';
 import { CarCard } from '@/components/fleet/car-card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ImageLightbox } from '@/components/ui/image-lightbox';
+import * as React from 'react';
 
 interface PageProps {
   params: { slug: string };
@@ -34,6 +36,14 @@ export function generateMetadata({ params }: PageProps): Metadata {
 export default function DestinationDetailPage({ params }: PageProps) {
   const destination = getDestinationBySlug(params.slug);
   if (!destination) notFound();
+
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [lightboxIndex, setLightboxIndex] = React.useState(0);
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -89,8 +99,21 @@ export default function DestinationDetailPage({ params }: PageProps) {
       <div className="container-lux px-4 sm:px-6 lg:px-8 pb-20">
         {/* Hero Image */}
         <div className="relative aspect-[16/9] rounded-[2rem] overflow-hidden mb-12">
-          <img src={destination.heroImage} alt={destination.cityName} className="h-full w-full object-cover" loading="lazy" />
+          <img
+            src={destination.heroImage}
+            alt={destination.cityName}
+            className="h-full w-full object-cover cursor-zoom-in transition-transform duration-300"
+            loading="lazy"
+            onClick={() => openLightbox(0)}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <button
+            onClick={() => openLightbox(0)}
+            className="absolute bottom-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors"
+            aria-label="View full image"
+          >
+            <Maximize2 className="h-5 w-5" />
+          </button>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
@@ -211,13 +234,29 @@ export default function DestinationDetailPage({ params }: PageProps) {
                 <h2 className="font-display text-2xl font-semibold mb-4">Gallery</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {gallery.map((img, i) => (
-                    <div key={i} className="aspect-[16/10] rounded-xl overflow-hidden">
+                    <button
+                      key={i}
+                      onClick={() => openLightbox(i)}
+                      className="relative aspect-[16/10] rounded-xl overflow-hidden focus:outline-none focus:ring-2 focus:ring-gold"
+                    >
                       <img src={img} alt={`${destination.name} gallery ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
-                    </div>
+                      <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Maximize2 className="h-5 w-5 text-white" />
+                      </div>
+                    </button>
                   ))}
                 </div>
               </section>
             )}
+
+            {/* Image Lightbox */}
+            <ImageLightbox
+              open={lightboxOpen}
+              onOpenChange={setLightboxOpen}
+              images={gallery}
+              startIndex={lightboxIndex}
+              alt={destination.cityName}
+            />
           </div>
 
           {/* Right Column - Sidebar */}
