@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowRight, Clock3, MapPinned, Compass, Hotel, UtensilsCrossed, CarFront, Fuel, BadgeCheck, Trees, ParkingCircle, SunMedium, Maximize2 } from 'lucide-react';
+import { ArrowRight, Clock3, MapPinned, Compass, Hotel, UtensilsCrossed, CarFront, Fuel, BadgeCheck, Trees, ParkingCircle, SunMedium } from 'lucide-react';
 import { getDestinationBySlug, getDestinationRecommendedCars, DESTINATIONS } from '@/lib/data/destinations';
 import { CarCard } from '@/components/fleet/car-card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ImageLightbox } from '@/components/ui/image-lightbox';
-import * as React from 'react';
+import { DestinationGallery } from '@/components/destinations/destination-gallery';
 
 interface PageProps {
   params: { slug: string };
@@ -36,14 +35,6 @@ export function generateMetadata({ params }: PageProps): Metadata {
 export default function DestinationDetailPage({ params }: PageProps) {
   const destination = getDestinationBySlug(params.slug);
   if (!destination) notFound();
-
-  const [lightboxOpen, setLightboxOpen] = React.useState(false);
-  const [lightboxIndex, setLightboxIndex] = React.useState(0);
-
-  const openLightbox = (index: number) => {
-    setLightboxIndex(index);
-    setLightboxOpen(true);
-  };
 
   const breadcrumbLd = {
     '@context': 'https://schema.org',
@@ -94,231 +85,189 @@ export default function DestinationDetailPage({ params }: PageProps) {
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl">{destination.shortDescription}</p>
           </div>
         </div>
-      </div>
-
-      <div className="container-lux px-4 sm:px-6 lg:px-8 pb-20">
-        {/* Hero Image */}
-        <div className="relative aspect-[16/9] rounded-[2rem] overflow-hidden mb-12">
-          <img
-            src={destination.heroImage}
-            alt={destination.cityName}
-            className="h-full w-full object-cover cursor-zoom-in transition-transform duration-300"
-            loading="lazy"
-            onClick={() => openLightbox(0)}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          <button
-            onClick={() => openLightbox(0)}
-            className="absolute bottom-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors"
-            aria-label="View full image"
-          >
-            <Maximize2 className="h-5 w-5" />
-          </button>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
-          {/* Left Column - Main Content */}
-          <div className="space-y-8">
-            {/* Description */}
-            <section className="luxury-card p-6 md:p-8">
-              <div className="flex items-center gap-2 text-gold mb-4">
-                <Compass className="h-5 w-5" />
-                <h2 className="font-display text-2xl font-semibold">About This Route</h2>
-              </div>
-              <p className="text-sm leading-7 text-muted-foreground">{destination.description}</p>
-            </section>
+        <div className="container-lux px-4 sm:px-6 lg:px-8 pb-20">
+          {/* Hero Image + Gallery (interactive — client component) */}
+          <DestinationGallery
+            heroImage={destination.heroImage}
+            gallery={gallery}
+            alt={destination.cityName}
+          />
 
-            {/* Best Time to Visit */}
-            {destination.bestTimeToVisit && (
+          <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
+            {/* Left Column - Main Content */}
+            <div className="space-y-8">
+              {/* Description */}
               <section className="luxury-card p-6 md:p-8">
                 <div className="flex items-center gap-2 text-gold mb-4">
-                  <Clock3 className="h-5 w-5" />
-                  <h2 className="font-display text-2xl font-semibold">Best Time to Visit</h2>
+                  <Compass className="h-5 w-5" />
+                  <h2 className="font-display text-2xl font-semibold">About This Route</h2>
                 </div>
-                <p className="text-sm leading-7 text-muted-foreground">{destination.bestTimeToVisit}</p>
+                <p className="text-sm leading-7 text-muted-foreground">{destination.description}</p>
               </section>
-            )}
 
-            {/* History */}
-            {destination.history && (
-              <section className="luxury-card p-6 md:p-8">
-                <div className="flex items-center gap-2 text-gold mb-4">
-                  <Trees className="h-5 w-5" />
-                  <h2 className="font-display text-2xl font-semibold">History & Heritage</h2>
-                </div>
-                <p className="text-sm leading-7 text-muted-foreground">{destination.history}</p>
-              </section>
-            )}
-
-            {/* Attractions */}
-            <section className="luxury-card p-6 md:p-8">
-              <div className="flex items-center gap-2 text-gold mb-4">
-                <MapPinned className="h-5 w-5" />
-                <h2 className="font-display text-2xl font-semibold">Travel Highlights</h2>
-              </div>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <h3 className="font-semibold mb-3">Attractions</h3>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    {destination.attractions.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="text-gold mt-0.5">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-3">Nearby Attractions</h3>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    {destination.nearbyAttractions.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="text-gold mt-0.5">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </section>
-
-            {/* Restaurants, Hotels, Parking */}
-            <section className="grid gap-4 md:grid-cols-3">
-              <div className="luxury-card p-5">
-                <div className="flex items-center gap-2 text-gold mb-3">
-                  <UtensilsCrossed className="h-5 w-5" />
-                  <h3 className="font-semibold">Restaurants</h3>
-                </div>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {destination.restaurants.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="text-gold mt-0.5">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="luxury-card p-5">
-                <div className="flex items-center gap-2 text-gold mb-3">
-                  <Hotel className="h-5 w-5" />
-                  <h3 className="font-semibold">Hotels</h3>
-                </div>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {destination.hotels.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="text-gold mt-0.5">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="luxury-card p-5">
-                <div className="flex items-center gap-2 text-gold mb-3">
-                  <ParkingCircle className="h-5 w-5" />
-                  <h3 className="font-semibold">Parking Info</h3>
-                </div>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {destination.parking.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="text-gold mt-0.5">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </section>
-
-            {/* Gallery */}
-            {gallery.length > 1 && (
-              <section className="luxury-card p-6 md:p-8">
-                <h2 className="font-display text-2xl font-semibold mb-4">Gallery</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {gallery.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => openLightbox(i)}
-                      className="relative aspect-[16/10] rounded-xl overflow-hidden focus:outline-none focus:ring-2 focus:ring-gold"
-                    >
-                      <img src={img} alt={`${destination.name} gallery ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
-                      <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <Maximize2 className="h-5 w-5 text-white" />
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Image Lightbox */}
-            <ImageLightbox
-              open={lightboxOpen}
-              onOpenChange={setLightboxOpen}
-              images={gallery}
-              startIndex={lightboxIndex}
-              alt={destination.cityName}
-            />
-          </div>
-
-          {/* Right Column - Sidebar */}
-          <div className="space-y-6">
-            {/* Weather */}
-            <section className="luxury-card p-6">
-              <div className="flex items-center gap-2 text-gold mb-4">
-                <SunMedium className="h-5 w-5" />
-                <h2 className="font-display text-xl font-semibold">Weather Overview</h2>
-              </div>
-              <p className="text-sm leading-7 text-muted-foreground">{destination.weatherOverview}</p>
-            </section>
-
-            {/* Fuel Cost */}
-            <section className="luxury-card p-6">
-              <div className="flex items-center gap-2 text-gold mb-4">
-                <Fuel className="h-5 w-5" />
-                <h2 className="font-display text-xl font-semibold">Estimated Fuel Cost</h2>
-              </div>
-              <p className="text-sm leading-7 text-muted-foreground">{destination.estimatedFuelCost}</p>
-            </section>
-
-            {/* Travel Info */}
-            <section className="luxury-card p-6">
-              <div className="flex items-center gap-2 text-gold mb-4">
-                <CarFront className="h-5 w-5" />
-                <h2 className="font-display text-xl font-semibold">Travel Info</h2>
-              </div>
-              <div className="space-y-3">
-                {destination.travelInfo.map((info) => (
-                  <div key={info.city} className="rounded-xl border border-border/60 p-3 text-sm">
-                    <div className="font-semibold">{info.city}</div>
-                    <div className="mt-1 text-muted-foreground">{info.distanceKm} km · {info.driveTime}</div>
-                    <div className="mt-1 text-xs text-muted-foreground">{info.routeInfo}</div>
+              {/* Best Time to Visit */}
+              {destination.bestTimeToVisit && (
+                <section className="luxury-card p-6 md:p-8">
+                  <div className="flex items-center gap-2 text-gold mb-4">
+                    <Clock3 className="h-5 w-5" />
+                    <h2 className="font-display text-2xl font-semibold">Best Time to Visit</h2>
                   </div>
-                ))}
-              </div>
-            </section>
+                  <p className="text-sm leading-7 text-muted-foreground">{destination.bestTimeToVisit}</p>
+                </section>
+              )}
 
-            {/* Recommended Cars */}
-            {recommendedCars.length > 0 && (
+              {/* History */}
+              {destination.history && (
+                <section className="luxury-card p-6 md:p-8">
+                  <div className="flex items-center gap-2 text-gold mb-4">
+                    <Trees className="h-5 w-5" />
+                    <h2 className="font-display text-2xl font-semibold">History & Heritage</h2>
+                  </div>
+                  <p className="text-sm leading-7 text-muted-foreground">{destination.history}</p>
+                </section>
+              )}
+
+              {/* Attractions */}
+              <section className="luxury-card p-6 md:p-8">
+                <div className="flex items-center gap-2 text-gold mb-4">
+                  <MapPinned className="h-5 w-5" />
+                  <h2 className="font-display text-2xl font-semibold">Travel Highlights</h2>
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div>
+                    <h3 className="font-semibold mb-3">Attractions</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      {destination.attractions.map((item) => (
+                        <li key={item} className="flex items-start gap-2">
+                          <span className="text-gold mt-0.5">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-3">Nearby Attractions</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      {destination.nearbyAttractions.map((item) => (
+                        <li key={item} className="flex items-start gap-2">
+                          <span className="text-gold mt-0.5">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              {/* Restaurants, Hotels, Parking */}
+              <section className="grid gap-4 md:grid-cols-3">
+                <div className="luxury-card p-5">
+                  <div className="flex items-center gap-2 text-gold mb-3">
+                    <UtensilsCrossed className="h-5 w-5" />
+                    <h3 className="font-semibold">Restaurants</h3>
+                  </div>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {destination.restaurants.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className="text-gold mt-0.5">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="luxury-card p-5">
+                  <div className="flex items-center gap-2 text-gold mb-3">
+                    <Hotel className="h-5 w-5" />
+                    <h3 className="font-semibold">Hotels</h3>
+                  </div>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {destination.hotels.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className="text-gold mt-0.5">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="luxury-card p-5">
+                  <div className="flex items-center gap-2 text-gold mb-3">
+                    <ParkingCircle className="h-5 w-5" />
+                    <h3 className="font-semibold">Parking Info</h3>
+                  </div>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {destination.parking.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className="text-gold mt-0.5">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            </div>
+
+            {/* Right Column - Sidebar */}
+            <div className="space-y-6">
+              {/* Weather */}
               <section className="luxury-card p-6">
                 <div className="flex items-center gap-2 text-gold mb-4">
-                  <BadgeCheck className="h-5 w-5" />
-                  <h2 className="font-display text-xl font-semibold">Recommended Cars</h2>
+                  <SunMedium className="h-5 w-5" />
+                  <h2 className="font-display text-xl font-semibold">Weather Overview</h2>
                 </div>
-                <div className="space-y-4">
-                  {recommendedCars.map((car) => (
-                    <CarCard key={car.slug} car={car} index={0} />
+                <p className="text-sm leading-7 text-muted-foreground">{destination.weatherOverview}</p>
+              </section>
+
+              {/* Fuel Cost */}
+              <section className="luxury-card p-6">
+                <div className="flex items-center gap-2 text-gold mb-4">
+                  <Fuel className="h-5 w-5" />
+                  <h2 className="font-display text-xl font-semibold">Estimated Fuel Cost</h2>
+                </div>
+                <p className="text-sm leading-7 text-muted-foreground">{destination.estimatedFuelCost}</p>
+              </section>
+
+              {/* Travel Info */}
+              <section className="luxury-card p-6">
+                <div className="flex items-center gap-2 text-gold mb-4">
+                  <CarFront className="h-5 w-5" />
+                  <h2 className="font-display text-xl font-semibold">Travel Info</h2>
+                </div>
+                <div className="space-y-3">
+                  {destination.travelInfo.map((info) => (
+                    <div key={info.city} className="rounded-xl border border-border/60 p-3 text-sm">
+                      <div className="font-semibold">{info.city}</div>
+                      <div className="mt-1 text-muted-foreground">{info.distanceKm} km · {info.driveTime}</div>
+                      <div className="mt-1 text-xs text-muted-foreground">{info.routeInfo}</div>
+                    </div>
                   ))}
                 </div>
-                <Link href="/fleet">
-                  <Button className="w-full mt-4 btn-gold rounded-full">
-                    View Full Fleet <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
               </section>
-            )}
+
+              {/* Recommended Cars */}
+              {recommendedCars.length > 0 && (
+                <section className="luxury-card p-6">
+                  <div className="flex items-center gap-2 text-gold mb-4">
+                    <BadgeCheck className="h-5 w-5" />
+                    <h2 className="font-display text-xl font-semibold">Recommended Cars</h2>
+                  </div>
+                  <div className="space-y-4">
+                    {recommendedCars.map((car) => (
+                      <CarCard key={car.slug} car={car} index={0} />
+                    ))}
+                  </div>
+                  <Link href="/fleet">
+                    <Button className="w-full mt-4 btn-gold rounded-full">
+                      View Full Fleet <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
+                </section>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </>
+    </>
   );
 }
