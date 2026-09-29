@@ -165,6 +165,7 @@ export const en: Dictionary = {
     },
     selectDates: 'Select dates',
     selectService: 'Select service type',
+    selectDate: 'Select date',
     submitRequest: 'Submit Booking Request',
     enableBooking: 'Select cities and dates to enable booking',
     notAvailable: 'not available',

@@ -3,15 +3,28 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Search, MapPin, Calendar, Clock, ArrowRight, User } from "lucide-react";
+import { Search, MapPin, Calendar, Clock, ArrowRight, User, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CountryCodeSelect } from "@/components/ui/country-code-select";
 import { CITIES } from "@/lib/data/site";
+import { t } from "@/lib/i18n/dictionary";
+import { useLocale } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
+
+const SERVICE_TYPES = [
+  { key: 'local', label: 'Local', description: 'Hourly & city packages' },
+  { key: 'outstation', label: 'Outstation', description: 'Long-distance travel' },
+  { key: 'airport', label: 'Airport & Transfers', description: 'Pickup & drop' },
+  { key: 'wedding', label: 'Wedding', description: 'Weddings & events' },
+  { key: 'packages', label: 'Packages', description: 'Custom packages' },
+  { key: 'self-drive', label: 'Self-drive', description: 'Drive yourself' },
+] as const;
 
 const TIMES = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
 
 export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compact' | 'default' }) {
   const router = useRouter();
+  const locale = useLocale();
   const [fullName, setFullName] = React.useState('');
   const [phone, setPhone] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -23,6 +36,8 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
   const [dropTime, setDropTime] = React.useState('10:00');
   const [serviceType, setServiceType] = React.useState('');
   const [specialRequirements, setSpecialRequirements] = React.useState('');
+  const [selectedCountry, setSelectedCountry] = React.useState('IN');
+  const [selectedCallingCode, setSelectedCallingCode] = React.useState('91');
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -57,71 +72,55 @@ export function BookingWidget({ variant = 'hero' }: { variant?: 'hero' | 'compac
     { icon: Clock, label: 'Return Time', value: dropTime, set: setDropTime, options: TIMES, placeholder: 'Select time' },
   ];
 
-  // Full booking form variant (for dedicated booking section)
+  // Full booking form variant (homepage)
   if (variant === 'default') {
     return (
       <form onSubmit={handleSearch} className="bg-white rounded-2xl shadow-luxury p-5 sm:p-6 md:p-8">
-        {/* Customer Details */}
+        {/* Client Details */}
         <div className="mb-6">
-          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Customer Details</h3>
+          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            {t('booking.clientDetails', { locale })}
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <FieldInput icon={Search} label="Full Name" value={fullName} set={setFullName} placeholder="Your full name" type="text" default />
-            <FieldInput icon={Search} label="Mobile Number" value={phone} set={setPhone} placeholder="+91 98765 43210" type="tel" default />
-            <FieldInput icon={Search} label="Email Address" value={email} set={setEmail} placeholder="you@example.com" type="email" default />
+            <FieldInput icon={User} label={t('booking.fullName', { locale })} value={fullName} set={setFullName} placeholder={t('booking.fullNamePlaceholder', { locale })} type="text" default />
+            <FieldInput icon={Mail} label={t('booking.email', { locale })} value={email} set={setEmail} placeholder={t('booking.emailPlaceholder', { locale })} type="email" default />
+            <div className="flex items-end gap-2">
+              <CountryCodeSelect
+                value={selectedCountry}
+                onChange={(code, callingCode) => { setSelectedCountry(code); setSelectedCallingCode(callingCode); }}
+              />
+              <div className="flex-1">
+                <FieldInput icon={Phone} label={t('booking.phone', { locale })} value={phone} set={setPhone} placeholder={t('booking.phonePlaceholder', { locale })} type="tel" default />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Trip Details */}
+        {/* Trip Information */}
         <div className="mb-6">
-          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Trip Details</h3>
+          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            {t('booking.tripInfo', { locale })}
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {fields.map((f, i) => (
-              <FieldInput key={i} {...f} default />
-            ))}
+            <FieldInput icon={MapPin} label={t('booking.pickupLocation', { locale })} value={pickupCity} set={setPickupCity} options={CITIES.map((c) => c.name)} placeholder={t('booking.selectCity', { locale })} default />
+            <FieldInput icon={MapPin} label={t('booking.dropoffLocation', { locale })} value={dropCity} set={setDropCity} options={CITIES.map((c) => c.name)} placeholder={t('booking.selectCity', { locale })} default />
+            <FieldInput icon={Calendar} label={t('booking.bookingDate', { locale })} value={pickupDate} set={setPickupDate} type="date" min={today} placeholder={t('booking.selectDate', { locale })} default />
+            <div>
+              <label htmlFor="serviceType" className="block text-xs font-medium text-muted-foreground flex items-center gap-1.5 mb-1.5">
+                <MapPin className="h-4 w-4 text-gold" /> {t('booking.serviceType', { locale })}
+              </label>
+              <select id="serviceType" value={serviceType} onChange={(e) => setServiceType(e.target.value)} className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors">
+                <option value="">{t('booking.selectService', { locale })}</option>
+                {SERVICE_TYPES.map((svc) => (
+                  <option key={svc.key} value={svc.key}>{svc.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
-
-        {/* Service Type */}
-        <div className="mb-6">
-          <h3 className="font-sans text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">Service</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => setServiceType('self-drive')}
-              className={cn(
-                'rounded-xl py-3.5 text-sm font-medium transition-colors border',
-                serviceType === 'self-drive' ? 'btn-gold border-gold' : 'border-border hover:border-gold/50'
-              )}
-            >
-              Self Drive
-            </button>
-            <button
-              type="button"
-              onClick={() => setServiceType('chauffeur')}
-              className={cn(
-                'rounded-xl py-3.5 text-sm font-medium transition-colors border',
-                serviceType === 'chauffeur' ? 'btn-gold border-gold' : 'border-border hover:border-gold/50'
-              )}
-            >
-              With Chauffeur
-            </button>
-          </div>
-        </div>
-
-        {/* Special Requirements */}
-        <div className="mb-6">
-          <label className="text-sm font-medium mb-1.5 block">Special Requirements (optional)</label>
-          <textarea
-            value={specialRequirements}
-            onChange={(e) => setSpecialRequirements(e.target.value)}
-            placeholder="Any special requests..."
-            rows={3}
-            className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none focus:border-gold focus:ring-1 focus:ring-gold resize-none"
-          />
         </div>
 
         <Button type="submit" className="btn-gold w-full rounded-xl h-12 text-base group">
-          Check Availability
+          {t('common.bookNow', { locale })}
           <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
         </Button>
       </form>
