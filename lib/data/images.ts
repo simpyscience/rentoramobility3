@@ -87,10 +87,17 @@ export const CHAUFFEUR_IMAGES: string[] = [
 ];
 
 /**
- * Feature chauffeur images used in the premium split-section slider.
- * These are the "3 best-looking" chauffeur/customer-comfort images.
- * Update this array to change the slider contents.
+ * All chauffeur images available in /public/images/chauffers2/
  */
+export const CHAUFFEUR_FEATURE_IMAGES_2: string[] = [
+  '/images/chauffers2/ChatGPT Image Sep 19, 2026, 05_13_11 PM.png',
+  '/images/chauffers2/Your paragraph text.png',
+  '/images/chauffers2/ChatGPT Image Aug 22, 2026, 06_18_42 PM.jpg',
+  '/images/chauffers2/WE GROW WITH YOU.png',
+  '/images/chauffers2/WE GROW WITH YOU (1).png',
+  '/images/chauffers2/image 1.jfif',
+];
+
 export const CHAUFFEUR_FEATURE_IMAGES: string[] = [
   '/images/chauffers/image_15b575c9 (1).png',
   '/images/chauffers/download (6)-images-19.jpg',
@@ -366,6 +373,13 @@ export function getAllChauffeurImages(): string[] {
  */
 export function getChauffeurFeatureImages(): string[] {
   return CHAUFFEUR_FEATURE_IMAGES;
+}
+
+/**
+ * Get all chauffeur images from the chauffers2 folder.
+ */
+export function getAllChauffeurImages2(): string[] {
+  return CHAUFFEUR_FEATURE_IMAGES_2;
 }
 
 /**
