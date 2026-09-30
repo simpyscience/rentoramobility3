@@ -28,6 +28,8 @@ const FOOTER_LINKS = {
     { href: '/fleet', label: 'Fleet' },
     { href: '/chauffeurs', label: 'Professional Chauffeurs' },
     { href: '/destinations', label: 'Destinations' },
+    { href: '/wedding', label: 'Weddings' },
+    { href: '/chauffeurs', label: 'Professional Chauffeurs' },
     { href: '/reviews', label: 'Reviews' },
     { href: '/services', label: 'Services' },
     { href: '/blog', label: 'Blog' },
