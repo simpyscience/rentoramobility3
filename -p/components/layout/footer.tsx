@@ -53,7 +53,7 @@ const FOOTER_LINKS = {
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-border bg-card/50">
+    <footer className="relative border-t border-border bg-blue-950">
       <div className="container-lux px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
