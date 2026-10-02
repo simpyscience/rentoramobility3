@@ -47,8 +47,8 @@ export function Navbar() {
           (and every other page). The supplied Innova homepage composition is the
           visual source of truth; this white header board sits above it so there is
           exactly one navbar, one logo and one set of navigation links. */}
-      <motion.header
-        initial={{ y: -100 }}
+       <motion.header
+        initial={{ y: 0 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="fixed inset-x-0 top-0 z-50 border-b border-border bg-white/95 backdrop-blur-xl shadow-sm"

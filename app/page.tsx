@@ -53,6 +53,7 @@ export default function HomePage() {
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent md:bg-gradient-to-r md:from-black/70 md:via-black/30 md:to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/75 to-transparent pointer-events-none" />
         <div className="relative container-lux px-4 sm:px-6 lg:px-8 min-h-[60vh] sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[88vh] flex flex-col justify-end pb-12 md:pb-16">
           <div className="max-w-xl md:max-w-2xl mt-16 sm:mt-20 md:mt-0">
             <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
